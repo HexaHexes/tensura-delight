@@ -5,9 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
- * Placeholder JUnit suite. The CI {@code junit} check asserts a non-zero test
- * count so it cannot pass vacuously, so this repo keeps at least this file
- * (and adds real unit tests as logic grows).
+ * Guards the mod id format that the generated resource paths and the reload
+ * listener's namespace filter both depend on.
  */
 class TensuraDelightIntegrationTest {
 
