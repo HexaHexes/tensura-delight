@@ -1,0 +1,23 @@
+Tensura - Delight Integration
+Copyright (c) 2026 Bitwise Madness
+
+This mod is licensed under the GNU Lesser General Public License v2.1 - see
+the accompanying LICENSE file.
+
+Third-party mods this project reads through public APIs, and any content
+included from elsewhere, are attributed here. Nothing is included or modified
+without a right to do so.
+
+- Minecraft is a trademark of Mojang AB. This mod is not affiliated with or
+  endorsed by Mojang.
+- NeoForge: https://neoforged.net/
+- Farmer's Delight by vectorwing (MIT): https://www.curseforge.com/minecraft/mc-mods/farmers-delight
+- Brewin' And Chewin' by lumpazl: https://www.curseforge.com/minecraft/mc-mods/brewin-and-chewin
+- Dungeon's Delight by Yirmiri: https://www.curseforge.com/minecraft/mc-mods/dungeons-delight
+- Tensura: Reincarnated by ManasMods (all rights reserved): https://www.curseforge.com/minecraft/mc-mods/tensura-reincarnated
+- ManasCore by ManasMods (all rights reserved), read as a dependency of
+  Tensura: Reincarnated.
+
+Tensura: Reincarnated and ManasCore publish no source. This mod interoperates
+with their public APIs only; no code or asset from them is copied, modified or
+redistributed here.
