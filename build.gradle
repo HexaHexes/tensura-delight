@@ -55,6 +55,17 @@ neoForge {
             type = "gameTestServer"
             gameDirectory = project.layout.projectDirectory.dir('run')
         }
+
+        // Regenerates src/generated/resources - the meal grant table that ships
+        // inside the jar. --mod scopes datagen to this mod only; the staged
+        // closure below satisfies the toml's mandatory deps FML checks in a data run.
+        data {
+            data()
+            gameDirectory = project.layout.projectDirectory.dir('run')
+            programArguments.addAll '--mod', mod_id, '--all',
+                    '--output', file('src/generated/resources').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+        }
     }
 
     mods {
@@ -95,6 +106,11 @@ def generateModMetadata = tasks.register('generateModMetadata', ProcessResources
 // Passing the provider as a source dir also wires the generation order.
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
+
+// The generated datapack is committed and packaged as part of the mod's
+// resources: datagen owns data/**, and the CI drift gate keeps the committed
+// tree identical to what runData produces.
+sourceSets.main.resources.srcDir 'src/generated/resources'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
@@ -165,6 +181,9 @@ dependencies {
 
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Gson rides inside Minecraft; pinned here so the parser tests run on a
+    // bare JVM with no game classes on the test classpath.
+    testImplementation 'com.google.code.gson:gson:2.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -173,8 +192,8 @@ test {
 }
 
 // Stage the closure into the run's production-style mods/ folder, where FML's
-// mods-folder locator finds it exactly like in a pack. The runs share run/, so
-// every run that boots into it takes the same set.
+// mods-folder locator finds it exactly like in a pack. Every run that boots
+// into run/ takes it, data runs included: FML validates the toml's deps there.
 tasks.register('prepareGametestMods', Sync) {
     from configurations.gametestMods
     into 'run/mods'
@@ -182,6 +201,7 @@ tasks.register('prepareGametestMods', Sync) {
 
 tasks.matching {
     it.name == 'runGameTestServer' || it.name == 'runServer' || it.name == 'runClient'
+            || it.name == 'runData'
 }.configureEach {
     dependsOn 'prepareGametestMods'
 }
@@ -191,7 +211,7 @@ tasks.matching {
 // Grade the run on the log summary: the task's exit code is not a reliable
 // signal. Keep expectedTests in sync with the @GameTest methods.
 tasks.matching { it.name == 'runGameTestServer' }.configureEach {
-    def expectedTests = 1
+    def expectedTests = 3
     doLast {
         def log = file('run/logs/latest.log')
         if (!log.exists()) {

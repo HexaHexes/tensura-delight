@@ -35,7 +35,7 @@ phases - progression, race diets, cooking - one tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightIntegrationGameTests` (1 test). `expectedTests = 1`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightIntegrationGameTests` (3 tests). `expectedTests = 3`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
 
@@ -53,3 +53,12 @@ into `run/mods` by `prepareGametestMods`.
 - ManasCore's module jars are exploded from `META-INF/jars` for compilation
   (`extractManascoreModules`); if Tensura types stop resolving, that task's
   input pin is the first thing to check.
+- **runData boots FML like every other run.** The data run validates the
+  toml's mandatory dependencies, so `runData` rides `prepareGametestMods`
+  beside the game test runs: a clean checkout (and the CI drift gate) has no
+  `run/mods` until that task stages the closure.
+- **The meal grant table never looks items up in a registry.** Entries are
+  keyed by item id string and matched against the eaten stack at runtime, so
+  a file naming an absent optional mod's item is dead weight rather than a
+  reload failure - the reload-failure rule above applies to tags and recipes,
+  not to this table.

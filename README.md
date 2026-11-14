@@ -6,16 +6,19 @@ stronger. This mod is for playing both at once.
 
 ## What it does
 
-- Meals from the three food mods are worth Tensura progression: the better the
-  dish, the more EP and magicule eating it gives, and every bite counts toward
-  the eating progress behind Tensura's skill unlocks and evolutions.
+- Eating the right meal from the three food mods pays toward Tensura
+  progression. A serving raises the EP you can hold and adds magicule, scaled
+  by how nutritious the dish is, so a plated feast beats a snack. The mod
+  ships a starter list of meals from all three mods, and a datapack can retune
+  the amounts or add meals to it.
 - Race appetite is respected. A race that does not eat gains nothing from a
   feast, and monster races are the ones built for what Dungeon's Delight cooks
   in a Monster Pot.
 - Tensura ingredients go back the other way: into the cooking pot, the keg and
   the Monster Pot.
 
-None of this is in the build yet. Each piece lands as it is finished.
+Race appetite and cooking Tensura ingredients in the delight workstations are
+not in the build yet. Each piece lands as it is finished.
 
 ## Dependencies
 
