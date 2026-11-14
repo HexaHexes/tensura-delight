@@ -1,12 +1,12 @@
-package org.bitwisemadness.tensuradelightintegration.gametest;
+package org.bitwisemadness.tensuradelight.gametest;
 
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import org.bitwisemadness.tensuradelightintegration.TensuraDelightIntegration;
-import org.bitwisemadness.tensuradelightintegration.food.MealGrants;
-import org.bitwisemadness.tensuradelightintegration.tensura.TensuraBridge;
+import org.bitwisemadness.tensuradelight.TensuraDelight;
+import org.bitwisemadness.tensuradelight.food.MealGrants;
+import org.bitwisemadness.tensuradelight.tensura.TensuraBridge;
 
 /**
  * Headless proof of the meal grant wiring: the mod boots, the reload listener
@@ -16,11 +16,11 @@ import org.bitwisemadness.tensuradelightintegration.tensura.TensuraBridge;
  * <p>Keep {@code expectedTests} in {@code build.gradle} in sync with the
  * number of {@code @GameTest} methods here, or the harness fails the run.</p>
  */
-@GameTestHolder(TensuraDelightIntegration.MOD_ID)
+@GameTestHolder(TensuraDelight.MOD_ID)
 @PrefixGameTestTemplate(false)
-public final class TensuraDelightIntegrationGameTests {
+public final class TensuraDelightGameTests {
 
-    private TensuraDelightIntegrationGameTests() {
+    private TensuraDelightGameTests() {
     }
 
     /** The mod is loaded and the empty structure template resolves. */

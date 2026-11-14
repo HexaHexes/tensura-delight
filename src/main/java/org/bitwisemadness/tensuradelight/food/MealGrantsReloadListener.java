@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration.food;
+package org.bitwisemadness.tensuradelight.food;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import org.bitwisemadness.tensuradelightintegration.TensuraDelightIntegration;
+import org.bitwisemadness.tensuradelight.TensuraDelight;
 
 /**
  * Loads {@code data/<mod id>/meal_grant/*.json} into {@link MealGrants}.
@@ -27,17 +27,17 @@ public final class MealGrantsReloadListener implements ResourceManagerReloadList
         Map<String, String> files = new TreeMap<>();
         Map<ResourceLocation, Resource> found = resourceManager.listResources(
                 MealGrants.DIRECTORY,
-                id -> TensuraDelightIntegration.MOD_ID.equals(id.getNamespace()));
+                id -> TensuraDelight.MOD_ID.equals(id.getNamespace()));
         found.forEach((id, resource) -> readInto(files, id, resource));
         if (files.isEmpty()) {
-            TensuraDelightIntegration.LOGGER.warn("No meal_grant data found; no meal grants EP or magicule");
+            TensuraDelight.LOGGER.warn("No meal_grant data found; no meal grants EP or magicule");
         }
         MealGrants.ParseResult result = MealGrants.parse(files);
         for (String problem : result.problems()) {
-            TensuraDelightIntegration.LOGGER.warn("Skipping malformed meal_grant file: {}", problem);
+            TensuraDelight.LOGGER.warn("Skipping malformed meal_grant file: {}", problem);
         }
         MealGrants.replace(result.table());
-        TensuraDelightIntegration.LOGGER.info("Loaded {} meal(s) and {} override(s) granting EP and magicule",
+        TensuraDelight.LOGGER.info("Loaded {} meal(s) and {} override(s) granting EP and magicule",
                 result.table().meals().size(), result.table().overrides().size());
     }
 
@@ -45,7 +45,7 @@ public final class MealGrantsReloadListener implements ResourceManagerReloadList
         try (InputStream in = resource.open()) {
             files.put(id.toString(), new String(in.readAllBytes(), StandardCharsets.UTF_8));
         } catch (IOException failure) {
-            TensuraDelightIntegration.LOGGER.warn("Could not read {}", id, failure);
+            TensuraDelight.LOGGER.warn("Could not read {}", id, failure);
         }
     }
 }

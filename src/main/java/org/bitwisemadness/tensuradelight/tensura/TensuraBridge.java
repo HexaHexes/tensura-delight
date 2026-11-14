@@ -1,8 +1,8 @@
-package org.bitwisemadness.tensuradelightintegration.tensura;
+package org.bitwisemadness.tensuradelight.tensura;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.fml.ModList;
-import org.bitwisemadness.tensuradelightintegration.TensuraDelightIntegration;
+import org.bitwisemadness.tensuradelight.TensuraDelight;
 
 /**
  * Tensura integration facade.
@@ -48,7 +48,7 @@ public final class TensuraBridge {
             TensuraAccess.grant(entity, ep, magicule);
             return true;
         } catch (Throwable failure) {
-            TensuraDelightIntegration.LOGGER.warn("Could not grant {} EP and {} magicule", ep, magicule, failure);
+            TensuraDelight.LOGGER.warn("Could not grant {} EP and {} magicule", ep, magicule, failure);
             return false;
         }
     }

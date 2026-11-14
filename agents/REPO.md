@@ -1,4 +1,4 @@
-# Repo rules - tensura-delight-integration
+# Repo rules - tensura-delight
 
 Repo-specific rules and notes. The org-wide `AGENTS.md` beside this file is
 maintained in [`neoforge-mod-template`](https://github.com/HexaHexes/neoforge-mod-template)
@@ -6,8 +6,8 @@ and pulled in verbatim - **never hand-edit it.** Everything in this file is this
 repo's own and is edited freely; keep it aligned with the org rules rather than
 restating them.
 
-**Repo:** `HexaHexes/tensura-delight-integration` - **Mod ID:** `tensura_delight_integration` - **Branch:** `main`
-**Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 - **Jar:** `build/libs/tensura_delight_integration-<version>.jar`
+**Repo:** `HexaHexes/tensura-delight` - **Mod ID:** `tensura_delight` - **Branch:** `main`
+**Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 - **Jar:** `build/libs/tensura_delight-<version>.jar`
 
 Brings Farmer's Delight, Brewin' And Chewin' and Dungeon's Delight into
 Tensura: Reincarnated's progression: delight meals grant EP and magicule and
@@ -35,7 +35,7 @@ phases - progression, race diets, cooking - one tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightIntegrationGameTests` (3 tests). `expectedTests = 3`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (3 tests). `expectedTests = 3`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
 

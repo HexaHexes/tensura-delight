@@ -1,4 +1,4 @@
-# Tensura - Delight Integration
+# Tensura Delight
 
 Farmer's Delight, Brewin' And Chewin' and Dungeon's Delight are built around
 sitting down to a good meal. Tensura: Reincarnated is built around getting

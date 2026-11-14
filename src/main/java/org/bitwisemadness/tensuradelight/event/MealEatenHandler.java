@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration.event;
+package org.bitwisemadness.tensuradelight.event;
 
 import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
@@ -7,9 +7,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import org.bitwisemadness.tensuradelightintegration.TensuraDelightIntegration;
-import org.bitwisemadness.tensuradelightintegration.food.MealGrants;
-import org.bitwisemadness.tensuradelightintegration.tensura.TensuraBridge;
+import org.bitwisemadness.tensuradelight.TensuraDelight;
+import org.bitwisemadness.tensuradelight.food.MealGrants;
+import org.bitwisemadness.tensuradelight.tensura.TensuraBridge;
 
 /**
  * Turns a finished eat into a grant from {@link MealGrants}.
@@ -45,7 +45,7 @@ public final class MealEatenHandler {
             return;
         }
         if (TensuraBridge.grant(player, value.ep(), value.magicule())) {
-            TensuraDelightIntegration.LOGGER.debug("Granted {} EP and {} magicule to {} for {}",
+            TensuraDelight.LOGGER.debug("Granted {} EP and {} magicule to {} for {}",
                     value.ep(), value.magicule(), player.getScoreboardName(), itemId);
         }
     }
