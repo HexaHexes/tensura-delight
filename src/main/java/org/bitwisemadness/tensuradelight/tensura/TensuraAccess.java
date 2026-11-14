@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration.tensura;
+package org.bitwisemadness.tensuradelight.tensura;
 
 import io.github.manasmods.tensura.util.EnergyHelper;
 import net.minecraft.world.entity.LivingEntity;

@@ -1,11 +1,11 @@
-package org.bitwisemadness.tensuradelightintegration.datagen;
+package org.bitwisemadness.tensuradelight.datagen;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.bitwisemadness.tensuradelightintegration.TensuraDelightIntegration;
-import org.bitwisemadness.tensuradelightintegration.food.MealGrants;
+import org.bitwisemadness.tensuradelight.TensuraDelight;
+import org.bitwisemadness.tensuradelight.food.MealGrants;
 
 /**
  * The shipped meal grant table, as datapack JSON built from
@@ -22,7 +22,7 @@ import org.bitwisemadness.tensuradelightintegration.food.MealGrants;
 public final class MealGrantContent {
 
     /** The single shipped file, keyed by its path inside the jar. */
-    private static final String FILE = "data/" + TensuraDelightIntegration.MOD_ID + "/"
+    private static final String FILE = "data/" + TensuraDelight.MOD_ID + "/"
             + MealGrants.DIRECTORY + "/meals.json";
 
     private MealGrantContent() {

@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration.datagen;
+package org.bitwisemadness.tensuradelight.datagen;
 
 import com.google.gson.JsonObject;
 import java.nio.file.Path;

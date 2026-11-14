@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration.food;
+package org.bitwisemadness.tensuradelight.food;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.bitwisemadness.tensuradelightintegration.datagen.MealGrantContent;
+import org.bitwisemadness.tensuradelight.datagen.MealGrantContent;
 import org.junit.jupiter.api.Test;
 
 /**

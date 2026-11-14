@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration;
+package org.bitwisemadness.tensuradelight;
 
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
@@ -7,33 +7,33 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import org.bitwisemadness.tensuradelightintegration.datagen.JsonFilesProvider;
-import org.bitwisemadness.tensuradelightintegration.datagen.MealGrantContent;
-import org.bitwisemadness.tensuradelightintegration.event.MealEatenHandler;
-import org.bitwisemadness.tensuradelightintegration.food.MealGrantsReloadListener;
-import org.bitwisemadness.tensuradelightintegration.tensura.TensuraBridge;
+import org.bitwisemadness.tensuradelight.datagen.JsonFilesProvider;
+import org.bitwisemadness.tensuradelight.datagen.MealGrantContent;
+import org.bitwisemadness.tensuradelight.event.MealEatenHandler;
+import org.bitwisemadness.tensuradelight.food.MealGrantsReloadListener;
+import org.bitwisemadness.tensuradelight.tensura.TensuraBridge;
 import org.slf4j.Logger;
 
 /**
- * Tensura - Delight Integration entry point.
+ * Tensura Delight entry point.
  *
  * <p>Everything observable is wired here: datagen on the mod bus, the reload
  * listener and the eat handler on the game bus. Both game-bus handlers are
  * plain NeoForge events - no mixin is involved anywhere in this mod.</p>
  */
-@Mod(TensuraDelightIntegration.MOD_ID)
-public final class TensuraDelightIntegration {
+@Mod(TensuraDelight.MOD_ID)
+public final class TensuraDelight {
 
-    public static final String MOD_ID = "tensura_delight_integration";
+    public static final String MOD_ID = "tensura_delight";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public TensuraDelightIntegration(IEventBus modBus) {
-        modBus.addListener(TensuraDelightIntegration::gatherData);
+    public TensuraDelight(IEventBus modBus) {
+        modBus.addListener(TensuraDelight::gatherData);
 
-        NeoForge.EVENT_BUS.addListener(TensuraDelightIntegration::onAddReloadListener);
+        NeoForge.EVENT_BUS.addListener(TensuraDelight::onAddReloadListener);
         NeoForge.EVENT_BUS.addListener(MealEatenHandler::onFinish);
 
-        LOGGER.info("Tensura - Delight Integration initialized (tensura {}, farmersdelight {}, "
+        LOGGER.info("Tensura Delight initialized (tensura {}, farmersdelight {}, "
                 + "brewinandchewin {}, dungeonsdelight {})",
                 TensuraBridge.isAvailable(), loaded("farmersdelight"),
                 loaded("brewinandchewin"), loaded("dungeonsdelight"));

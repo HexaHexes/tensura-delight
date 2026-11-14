@@ -1,4 +1,4 @@
-package org.bitwisemadness.tensuradelightintegration.food;
+package org.bitwisemadness.tensuradelight.food;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
