@@ -16,5 +16,70 @@
     "farmersdelight:roast_chicken",
     "farmersdelight:vegetable_soup"
   ],
-  "overrides": {}
+  "overrides": {
+    "brewinandchewin:beer": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:bloody_mary": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:dread_nog": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:egg_grog": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:glittering_grenadine": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:kombucha": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:mead": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:pale_jane": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:red_rum": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:rice_wine": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:saccharine_rum": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:salty_folly": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:steel_toe_stout": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:strongroot_ale": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:vodka": {
+      "ep": 2.0,
+      "magicule": 10.0
+    },
+    "brewinandchewin:withering_dross": {
+      "ep": 2.0,
+      "magicule": 10.0
+    }
+  }
 }

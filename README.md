@@ -17,14 +17,25 @@ stronger. This mod is for playing both at once.
   band, and evolves into the next material of its family, with the top rungs
   joining Tensura's kunai ladder. The per-cut reward and every rung can be
   retuned from a datapack.
-- Race appetite is respected. A race that does not eat gains nothing from a
-  feast, and monster races are the ones built for what Dungeon's Delight cooks
-  in a Monster Pot.
+- Race appetite decides what delight food does. A race that does not eat has
+  delight food and drinks refused before use, monster races are the ones built
+  for what Dungeon's Delight cooks in a Monster Pot, and the remaining classes
+  decide who receives a grant. The shipped appetite classes:
+
+  | Appetite class | Tag | Shipped default | Effect |
+  |---|---|---|---|
+  | does not eat | `tensura_delight:does_not_eat` | `#tensura:unable_to_heal_with_food` (ghoul, vampire, vampire_overcomer, vampire_lord, divine_vampire) | Delight food and drinks are refused before use: nothing consumed, no nutrition, no effects, no grant |
+  | monster eater | `tensura_delight:monster_eater` | `#tensura:undead`, `#tensura:necromancer`, `#tensura:daemon`, `#tensura:slime`, `#capital_tensura_reincarnated:monsters` (optional) | only these races receive EP/magicule from Dungeon's Delight monster meals |
+  | eats | `tensura_delight:eats` | empty = no restriction | when non-empty, only listed races receive grants from ordinary meals |
+  | drinker | `tensura_delight:drinker` | empty = no restriction | when non-empty, only listed races receive grants from drinks |
+
+  Monster Effects and Tipsy stay Dungeon's Delight's and Brewin' And Chewin's
+  own behaviour: this mod only gates who receives the EP and magicule grant.
+  Every appetite class is a datapack race tag, so a pack re-classifies a race
+  with a tag file, no rebuild.
 - Tensura ingredients go back the other way. Tensura beef, fish and spider
   legs work in the cutting board, the cooking pot, the keg and the Monster
   Pot, so the delight mods' recipes can be cooked from a Tensura hunt.
-
-Race appetite is not in the build yet. Each piece lands as it is finished.
 
 ## Dependencies
 

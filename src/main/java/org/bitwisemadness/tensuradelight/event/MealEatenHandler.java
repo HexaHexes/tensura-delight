@@ -8,17 +8,20 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import org.bitwisemadness.tensuradelight.TensuraDelight;
+import org.bitwisemadness.tensuradelight.appetite.Appetite;
 import org.bitwisemadness.tensuradelight.food.MealGrants;
 import org.bitwisemadness.tensuradelight.tensura.TensuraBridge;
 
 /**
- * Turns a finished eat into a grant from {@link MealGrants}.
+ * Turns a finished eat into a grant from {@link MealGrants}, for the races
+ * whose appetite allows it.
  *
  * <p>Subscribed to NeoForge's {@code LivingEntityUseItemEvent.Finish} on the
  * game bus: Tensura has no eating event of its own, and the observation must
  * stay on public API rather than a mixin. Only a server-side player finishing
- * a food stack is considered, and an item the table does not list changes
- * nothing.</p>
+ * a food stack is considered, an item the table does not list changes
+ * nothing, and appetite now decides <b>who</b> receives the grant: a race that
+ * refuses delight food or is not listed in the item's gate walks away empty.</p>
  */
 public final class MealEatenHandler {
 
@@ -42,6 +45,9 @@ public final class MealEatenHandler {
         }
         MealGrants.Grant value = grant.get();
         if (value.ep() <= 0.0 && value.magicule() <= 0.0) {
+            return;
+        }
+        if (!Appetite.grantAllowed(player, stack)) {
             return;
         }
         if (TensuraBridge.grant(player, value.ep(), value.magicule())) {

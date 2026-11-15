@@ -7,10 +7,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import org.bitwisemadness.tensuradelight.datagen.AppetiteTagsContent;
 import org.bitwisemadness.tensuradelight.datagen.JsonFilesProvider;
 import org.bitwisemadness.tensuradelight.datagen.KnifeGearContent;
 import org.bitwisemadness.tensuradelight.datagen.MealGrantContent;
 import org.bitwisemadness.tensuradelight.datagen.StationRecipesContent;
+import org.bitwisemadness.tensuradelight.event.AppetiteRefusalHandler;
 import org.bitwisemadness.tensuradelight.event.CuttingBoardHandler;
 import org.bitwisemadness.tensuradelight.event.MealEatenHandler;
 import org.bitwisemadness.tensuradelight.food.MealGrantsReloadListener;
@@ -22,9 +24,9 @@ import org.slf4j.Logger;
  * Tensura Delight entry point.
  *
  * <p>Everything observable is wired here: datagen on the mod bus, the reload
- * listeners and the eat and cut handlers on the game bus. All three game-bus
- * handlers are plain NeoForge events - no mixin is involved anywhere in this
- * mod.</p>
+ * listeners and the eat, cut and appetite-refusal handlers on the game bus.
+ * All four game-bus listeners are plain NeoForge events - no mixin is
+ * involved anywhere in this mod.</p>
  */
 @Mod(TensuraDelight.MOD_ID)
 public final class TensuraDelight {
@@ -38,6 +40,7 @@ public final class TensuraDelight {
         NeoForge.EVENT_BUS.addListener(TensuraDelight::onAddReloadListener);
         NeoForge.EVENT_BUS.addListener(MealEatenHandler::onFinish);
         NeoForge.EVENT_BUS.addListener(CuttingBoardHandler::onRightClickBlock);
+        NeoForge.EVENT_BUS.addListener(AppetiteRefusalHandler::onStart);
 
         LOGGER.info("Tensura Delight initialized (tensura {}, farmersdelight {}, "
                 + "brewinandchewin {}, dungeonsdelight {})",
@@ -56,7 +59,10 @@ public final class TensuraDelight {
         event.addListener(new CuttingGrantsReloadListener());
     }
 
-    /** Feeds the shipped content ({@link MealGrantContent}, {@link KnifeGearContent}, {@link StationRecipesContent}) into datagen. */
+    /**
+     * Feeds the shipped content ({@link MealGrantContent}, {@link KnifeGearContent},
+     * {@link StationRecipesContent}, {@link AppetiteTagsContent}) into datagen.
+     */
     private static void gatherData(GatherDataEvent event) {
         if (!event.includeServer()) {
             return;
@@ -67,5 +73,7 @@ public final class TensuraDelight {
                 event.getGenerator().getPackOutput(), KnifeGearContent.build()));
         event.addProvider(new JsonFilesProvider("station recipes",
                 event.getGenerator().getPackOutput(), StationRecipesContent.build()));
+        event.addProvider(new JsonFilesProvider("appetite tags",
+                event.getGenerator().getPackOutput(), AppetiteTagsContent.build()));
     }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.bitwisemadness.tensuradelight.datagen.MealGrantContent;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,14 @@ class MealGrantsTest {
                 .grantFor("farmersdelight:beef_stew", 0).orElseThrow();
         assertEquals(0.0, grant.ep());
         assertEquals(0.0, grant.magicule());
+    }
+
+    @Test
+    void fixedDrinksOverrideTheirZeroNutrition() {
+        assertEquals(Optional.of(new MealGrants.Grant(2.0, 10.0)),
+                MealGrants.defaults().grantFor("brewinandchewin:beer", 0));
+        assertTrue(MealGrants.defaults().grantFor("brewinandchewin:kombucha", 0).isPresent());
+        assertTrue(MealGrants.defaults().grantFor("farmersdelight:milk_bottle", 0).isEmpty());
     }
 
     @Test

@@ -56,6 +56,36 @@ public final class MealGrants {
             "farmersdelight:roast_chicken",
             "farmersdelight:vegetable_soup");
 
+    /**
+     * The shipped fixed grants: every drink of Brewin' And Chewin's
+     * {@code fermented_drinks} tag, at one nutrition's worth of the shipped
+     * scale (2 EP and 10 magicule per nutrition).
+     *
+     * <p>Drinks carry nutrition 0, so a scaled grant would compute to zero
+     * and be refused as no grant at all - yet {@code alwaysEdible} booze can
+     * be drunk at full hunger, which bounds it by the brewing cost instead,
+     * the same kind of resource-gated action as a knife cut. The order below
+     * is the shipped file's field order: the datagen round trip and the
+     * drift gate read it back, so it must never depend on hash order.</p>
+     */
+    private static final Map<String, Grant> DEFAULT_OVERRIDES = fixedGrants(
+            "brewinandchewin:beer",
+            "brewinandchewin:vodka",
+            "brewinandchewin:mead",
+            "brewinandchewin:rice_wine",
+            "brewinandchewin:egg_grog",
+            "brewinandchewin:strongroot_ale",
+            "brewinandchewin:saccharine_rum",
+            "brewinandchewin:pale_jane",
+            "brewinandchewin:salty_folly",
+            "brewinandchewin:steel_toe_stout",
+            "brewinandchewin:glittering_grenadine",
+            "brewinandchewin:bloody_mary",
+            "brewinandchewin:red_rum",
+            "brewinandchewin:withering_dross",
+            "brewinandchewin:dread_nog",
+            "brewinandchewin:kombucha");
+
     private static final String ID_NAMESPACE_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_.-";
     private static final String ID_PATH_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_./-";
 
@@ -65,7 +95,18 @@ public final class MealGrants {
     private MealGrants() {
     }
 
-    /** One grant: {@code ep} added to the maximum, {@code magicule} added to the pool. */
+    /**
+     * One grant: {@code ep} added to the maximum, {@code magicule} added to
+     * the pool.
+     *
+     * <p>Most entries scale from the eaten stack's nutrition, which is why
+     * the table also carries fixed overrides: all sixteen Brewin' And Chewin'
+     * drinks are nutrition 0, so a scaled grant would compute to zero and be
+     * refused as no grant at all. They are still worth paying for -
+     * {@code alwaysEdible} booze can be drunk at full hunger, so what bounds
+     * the grant is the brewing that produced it, the same class of
+     * resource-gated action as Phase 4's cutting.</p>
+     */
     public record Grant(double ep, double magicule) {
     }
 
@@ -74,7 +115,9 @@ public final class MealGrants {
      *
      * <p>An item pays only when the table lists it, either in {@code meals}
      * (scaled from the eaten stack's nutrition) or in {@code overrides} (fixed
-     * amounts, which win for that item).</p>
+     * amounts, which win for that item). The shipped defaults carry one
+     * override per drink for the reason on {@link Grant}: nutrition 0 would
+     * otherwise scale to nothing at all.</p>
      */
     public record Table(double epPerNutrition, double magiculePerNutrition, double maxMealEp,
             Set<String> meals, Map<String, Grant> overrides) {
@@ -182,8 +225,18 @@ public final class MealGrants {
 
     private static Table defaultTable() {
         Set<String> meals = Collections.unmodifiableSet(new LinkedHashSet<>(DEFAULT_MEALS));
+        Map<String, Grant> overrides = Collections.unmodifiableMap(new LinkedHashMap<>(DEFAULT_OVERRIDES));
         return new Table(DEFAULT_EP_PER_NUTRITION, DEFAULT_MAGICULE_PER_NUTRITION, DEFAULT_MAX_MEAL_EP,
-                meals, Map.of());
+                meals, overrides);
+    }
+
+    /** One fixed grant per id, in call order, so the shipped field order is the written order. */
+    private static Map<String, Grant> fixedGrants(String... itemIds) {
+        Map<String, Grant> grants = new LinkedHashMap<>();
+        for (String itemId : itemIds) {
+            grants.put(itemId, new Grant(DEFAULT_EP_PER_NUTRITION, DEFAULT_MAGICULE_PER_NUTRITION));
+        }
+        return grants;
     }
 
     private record FileContent(Double epPerNutrition, Double magiculePerNutrition, Double maxMealEp,
