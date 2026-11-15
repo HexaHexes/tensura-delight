@@ -8,9 +8,11 @@ stronger. This mod is for playing both at once.
 
 - Eating the right meal from the three food mods pays toward Tensura
   progression. A serving raises the EP you can hold and adds magicule, scaled
-  by how nutritious the dish is, so a plated feast beats a snack. The mod
-  ships a starter list of meals from all three mods, and a datapack can retune
-  the amounts or add meals to it.
+  by how nutritious the dish is, so a plated feast beats a snack. Brewin' And
+  Chewin's drinks carry no nutrition, so they pay a small fixed amount instead
+  - one nutrition's worth of the same scale. The mod ships a starter list of
+  meals from all three mods, and a datapack can retune the amounts or add
+  meals to it.
 - Knives climb their own gear ladder now. Every knife and cleaver from
   Farmer's Delight, Aquaculture, Aquaculture Delight and Dungeon's Delight
   earns gear EP in combat and while cutting on a cutting board, fills its
@@ -46,8 +48,8 @@ stronger. This mod is for playing both at once.
 | Required | Tensura: Reincarnated | — |
 | Required | ManasCore | Ships with Tensura: Reincarnated |
 | Required | Farmer's Delight | The base the other two food mods extend |
-| Optional | Brewin' And Chewin' | The keg's drinks and fermented food; missing them costs only those recipes |
-| Optional | Dungeon's Delight | The Monster Pot and its monster food; missing it costs only those recipes |
+| Optional | Brewin' And Chewin' | The keg's drinks and fermented food; missing it costs those recipes and the drink grants |
+| Optional | Dungeon's Delight | The Monster Pot and its monster food; missing it costs those recipes and the monster-meal grants |
 
 ## Credits
 
