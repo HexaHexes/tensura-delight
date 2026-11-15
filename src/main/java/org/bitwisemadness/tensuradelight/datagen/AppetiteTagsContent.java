@@ -3,7 +3,6 @@ package org.bitwisemadness.tensuradelight.datagen;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -58,18 +57,12 @@ public final class AppetiteTagsContent {
         files.put(EATS_FILE, tag());
         files.put(DRINKER_FILE, tag());
         files.put(MONSTER_MEALS_FILE, tag(optionalReference("#dungeonsdelight:monster_foods")));
+        // Both FD and DD write data/farmersdelight/tags/item/drinks.json, but
+        // TagLoader unions a path's whole resource stack unless a file sets
+        // "replace": true - so the two merge to all ten. See agents/REPO.md.
         files.put(DRINKS_FILE, tag(
                 optionalReference("#brewinandchewin:fermented_drinks"),
-                new JsonPrimitive("farmersdelight:milk_bottle"),
-                new JsonPrimitive("farmersdelight:apple_cider"),
-                new JsonPrimitive("farmersdelight:melon_juice"),
-                new JsonPrimitive("farmersdelight:hot_cocoa"),
-                optionalReference("dungeonsdelight:spider_bubble_tea"),
-                optionalReference("dungeonsdelight:bloody_mary"),
-                optionalReference("dungeonsdelight:taro_milk_tea"),
-                optionalReference("dungeonsdelight:trial_freakshake"),
-                optionalReference("dungeonsdelight:liveroot_beer"),
-                optionalReference("dungeonsdelight:skyberry_brew")));
+                optionalReference("#farmersdelight:drinks")));
         validate(files);
         return files;
     }
@@ -133,7 +126,8 @@ public final class AppetiteTagsContent {
         requireReferences(files.get(MONSTER_EATER_FILE), "#tensura:undead", "#tensura:necromancer",
                 "#tensura:daemon", "#tensura:slime");
         requireReferences(files.get(MONSTER_MEALS_FILE), "#dungeonsdelight:monster_foods");
-        requireReferences(files.get(DRINKS_FILE), "#brewinandchewin:fermented_drinks");
+        requireReferences(files.get(DRINKS_FILE), "#brewinandchewin:fermented_drinks",
+                "#farmersdelight:drinks");
     }
 
     private static void requireEmpty(JsonObject tag, String path) {
