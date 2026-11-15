@@ -1,0 +1,6 @@
+// 1.21.1	2026-11-15T12:12:51.6703399	station recipes
+de8b0973cb92ec87d021c186100ef5aed30930da data/tensura_delight/recipe/cooking/cattledeer_stew.json
+e34d8c0a3469ae8553665f49c21dbd242a47bf24 data/tensura_delight/recipe/cooking/spear_toro_fish_stew.json
+809e6a29837e62c19b7c425cdccdb204c2bfe472 data/tensura_delight/recipe/cutting/cattledeer_beef.json
+74cfccbfab432258f6f4c9070357da43e02f1769 data/tensura_delight/recipe/fermenting/kippers_from_spear_toro.json
+8024c1d8338494b491eab0873bb224cc48b5d116 data/tensura_delight/recipe/monster_cooking/spider_bisque_from_knight_spider.json

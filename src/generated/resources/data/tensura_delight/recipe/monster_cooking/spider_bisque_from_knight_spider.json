@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
+  "type": "dungeonsdelight:monster_cooking",
+  "experience": 1.0,
+  "ingredients": [
+    {
+      "item": "tensura:knight_spider_leg"
+    },
+    {
+      "item": "tensura:knight_spider_leg"
+    },
+    {
+      "item": "dungeonsdelight:rotgourd_slice"
+    },
+    {
+      "item": "dungeonsdelight:spider_extract"
+    }
+  ],
+  "recipe_book_tab": "monster_meals",
+  "result": {
+    "count": 1,
+    "id": "dungeonsdelight:spider_bisque"
+  }
+}

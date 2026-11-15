@@ -45,11 +45,13 @@ public final class MealGrants {
     private static final List<String> DEFAULT_MEALS = List.of(
             "brewinandchewin:cheesy_pasta",
             "brewinandchewin:creamy_onion_soup",
+            "brewinandchewin:kippers",
             "brewinandchewin:pizza_slice",
             "dungeonsdelight:ghoulash",
             "dungeonsdelight:monster_burger",
             "dungeonsdelight:spider_bisque",
             "farmersdelight:beef_stew",
+            "farmersdelight:fish_stew",
             "farmersdelight:fried_rice",
             "farmersdelight:roast_chicken",
             "farmersdelight:vegetable_soup");

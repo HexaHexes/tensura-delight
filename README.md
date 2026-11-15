@@ -20,11 +20,11 @@ stronger. This mod is for playing both at once.
 - Race appetite is respected. A race that does not eat gains nothing from a
   feast, and monster races are the ones built for what Dungeon's Delight cooks
   in a Monster Pot.
-- Tensura ingredients go back the other way: into the cooking pot, the keg and
-  the Monster Pot.
+- Tensura ingredients go back the other way. Tensura beef, fish and spider
+  legs work in the cutting board, the cooking pot, the keg and the Monster
+  Pot, so the delight mods' recipes can be cooked from a Tensura hunt.
 
-Race appetite and cooking Tensura ingredients in the delight workstations are
-not in the build yet. Each piece lands as it is finished.
+Race appetite is not in the build yet. Each piece lands as it is finished.
 
 ## Dependencies
 

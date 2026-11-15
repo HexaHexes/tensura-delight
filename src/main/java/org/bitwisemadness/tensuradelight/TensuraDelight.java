@@ -10,6 +10,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.bitwisemadness.tensuradelight.datagen.JsonFilesProvider;
 import org.bitwisemadness.tensuradelight.datagen.KnifeGearContent;
 import org.bitwisemadness.tensuradelight.datagen.MealGrantContent;
+import org.bitwisemadness.tensuradelight.datagen.StationRecipesContent;
 import org.bitwisemadness.tensuradelight.event.CuttingBoardHandler;
 import org.bitwisemadness.tensuradelight.event.MealEatenHandler;
 import org.bitwisemadness.tensuradelight.food.MealGrantsReloadListener;
@@ -55,7 +56,7 @@ public final class TensuraDelight {
         event.addListener(new CuttingGrantsReloadListener());
     }
 
-    /** Feeds the shipped tables ({@link MealGrantContent}, {@link KnifeGearContent}) into datagen. */
+    /** Feeds the shipped content ({@link MealGrantContent}, {@link KnifeGearContent}, {@link StationRecipesContent}) into datagen. */
     private static void gatherData(GatherDataEvent event) {
         if (!event.includeServer()) {
             return;
@@ -64,5 +65,7 @@ public final class TensuraDelight {
                 event.getGenerator().getPackOutput(), MealGrantContent.build()));
         event.addProvider(new JsonFilesProvider("knife_gear",
                 event.getGenerator().getPackOutput(), KnifeGearContent.build()));
+        event.addProvider(new JsonFilesProvider("station recipes",
+                event.getGenerator().getPackOutput(), StationRecipesContent.build()));
     }
 }
