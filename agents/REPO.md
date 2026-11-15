@@ -37,9 +37,65 @@ tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (6 tests). `expectedTests = 6`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (9 tests). `expectedTests = 9`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
+
+**Station recipes (phase 3)**
+- **Path ownership:** this repo owns `data/tensura_delight/recipe/**` - one
+  file per recipe at `data/tensura_delight/recipe/<station>/<name>.json`,
+  recipe ids `tensura_delight:<station>/<name>`.
+- **The table:** `recipe/StationRecipes.java` builds the five recipes as
+  gson JSON (no Minecraft classes, so JUnit runs it headless);
+  `datagen/StationRecipesContent.java` round-trips every file through gson
+  and hands the map to a `JsonFilesProvider` in `TensuraDelight.gatherData`,
+  so the JSON ships only from `./gradlew runData` and table and output
+  cannot drift apart. Each recipe mirrors the host's own recipe of the same
+  dish, keeping its experience, tab, category, temperature and tool:
+  - `cooking/cattledeer_stew` - cooking pot: `tensura:cattledeer_beef` +
+    carrot + potato -> `farmersdelight:beef_stew`.
+  - `cooking/spear_toro_fish_stew` - cooking pot: `tensura:raw_spear_toro_meat`
+    + tomato sauce + onion -> `farmersdelight:fish_stew`.
+  - `cutting/cattledeer_beef` - cutting board: `tensura:cattledeer_beef` ->
+    2x `farmersdelight:minced_beef`, same knife tool as FD's beef cutting.
+  - `fermenting/kippers_from_spear_toro` - keg: 2x `tensura:raw_spear_toro_meat`
+    + dried kelp + the empty fourth slot -> 2x `brewinandchewin:kippers`.
+  - `monster_cooking/spider_bisque_from_knight_spider` - Monster Pot: 2x
+    `tensura:knight_spider_leg` + rotgourd slice + spider extract ->
+    `dungeonsdelight:spider_bisque`.
+- **Missing-host gating is per-recipe `neoforge:conditions`, not a gated
+  provider.** The keg and Monster Pot recipes open with
+  `{"neoforge:conditions":[{"type":"neoforge:mod_loaded","modid":...}]}` -
+  the exact pattern Farmer's Delight and Dungeon's Delight use for their own
+  integration recipes. Conditions are evaluated before the recipe codec
+  decodes, so without the host the JSON is never parsed: no reload error, no
+  missing-recipe log spam. Gating the *provider* at datagen time was rejected
+  deliberately: `runData` output must be byte-identical whichever optional
+  mods are installed, or the drift gate breaks - this is a knowing deviation
+  from the issue's "provider gated per mod" wording. The two cooking-pot
+  recipes and the cutting recipe carry no condition: tensura, farmersdelight
+  and minecraft are required deps.
+- **Phase 1 table:** `brewinandchewin:kippers` (nutrition 6, so 12 EP and 60
+  magicule at the defaults) and `farmersdelight:fish_stew` joined
+  `MealGrants.DEFAULT_MEALS`, and `meal_grant/meals.json` was regenerated
+  with them. `farmersdelight:minced_beef` is deliberately absent: a cutting
+  result is an ingredient for further cooking, and Farmer's Delight's own
+  minced beef is not tabled either.
+- **Gotcha:** Tensura's fish and meats are not in `c:foods/safe_raw_fish` or
+  `c:foods/raw_beef` - that gap is the whole reason these recipes exist.
+  Never "fix" an ingredient back into those tags; it would silently exclude
+  every Tensura item again.
+- **Driving `matches()` headless:** all four stations are driven for real in
+  the GameTests. `RecipeWrapper` takes an `IItemHandler` in this NeoForge, not
+  a `SimpleContainer`, so the cooking pot and Monster Pot inputs wrap a
+  6-slot `ItemStackHandler` (both `matches` scan exactly six slots); the
+  cutting board uses `CuttingBoardRecipeInput(item, knife)`; the keg uses an
+  inline `KegRecipeWrapper` over 4 slots returning
+  `AbstractedFluidStack.EMPTY`, because a recipe with no fluid ingredient
+  demands an empty keg fluid.
+- **Not shipped:** `advancement/recipes/**` unlock files. Recipe viewers
+  (JEI/EMI) show the recipes outright; whether the vanilla recipe book also
+  needs unlock advancements mirroring the hosts' is a follow-up decision.
 
 **Knife gear evolution (phase 4)**
 - **Path ownership:** this repo owns `data/tensura_delight/gear_existence/**`
