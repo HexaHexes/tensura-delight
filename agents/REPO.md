@@ -120,6 +120,18 @@ into `run/mods` by `prepareGametestMods`.
   `tensura_faction_spawn` namespace rather than its own, so the reference
   resolves to nothing today; `required: false` keeps it a self-activating
   extension point the day it ships correctly.
+- **GameTests must not use `makeMockServerPlayerInLevel`.** It runs
+  `PlayerList.placeNewPlayer`, which fires `playerLogin`, and ManasCore's
+  login listener answers by sending `manascore_config:sync_config_to_client`
+  to a connection that never negotiated any channel - NeoForge's
+  `NetworkRegistry.checkPacket` then throws "Payload ... may not be sent to
+  the client!" straight out of the test. Use `makeMockPlayer(GameType)`:
+  it is only constructed, never placed, so no login event fires. That works
+  here because every appetite decision (`Appetite.refusesUse`,
+  `Appetite.grantAllowed`) and `EventHooks.onItemUseStart` take a
+  `LivingEntity`, not a `ServerPlayer` - if a future test needs a real logged-in
+  player, the config payload problem has to be solved first, not worked around
+  by catching the exception.
 
 **Station recipes (phase 3)**
 - **Path ownership:** this repo owns `data/tensura_delight/recipe/**` - one
