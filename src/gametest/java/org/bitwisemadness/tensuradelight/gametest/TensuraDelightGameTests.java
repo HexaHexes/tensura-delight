@@ -17,13 +17,14 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -261,7 +262,7 @@ public final class TensuraDelightGameTests {
     /** A non-eater never gets as far as using delight food: the use start cancels. */
     @GameTest(template = "empty")
     public static void non_eater_refuses_delight_food_at_use_start(GameTestHelper helper) {
-        ServerPlayer ghoul = eaterWith(helper, "tensura:ghoul");
+        Player ghoul = eaterWith(helper, "tensura:ghoul");
         int started = EventHooks.onItemUseStart(ghoul, stack("farmersdelight:beef_stew"),
                 InteractionHand.MAIN_HAND, 32);
         helper.assertTrue(started == -1,
@@ -272,7 +273,7 @@ public final class TensuraDelightGameTests {
     /** An unrefused eater is completely unaffected: food and drink both start with their duration. */
     @GameTest(template = "empty")
     public static void eater_starts_delight_food_normally(GameTestHelper helper) {
-        ServerPlayer human = eaterWith(helper, "tensura:human");
+        Player human = eaterWith(helper, "tensura:human");
         int stew = EventHooks.onItemUseStart(human, stack("farmersdelight:beef_stew"),
                 InteractionHand.MAIN_HAND, 32);
         helper.assertTrue(stew == 32, "a human must start beef stew, got " + stew);
@@ -285,7 +286,7 @@ public final class TensuraDelightGameTests {
     /** Refusal only ever reaches delight food: another namespace and a non-food stay usable. */
     @GameTest(template = "empty")
     public static void refusal_is_scoped_to_delight_food(GameTestHelper helper) {
-        ServerPlayer ghoul = eaterWith(helper, "tensura:ghoul");
+        Player ghoul = eaterWith(helper, "tensura:ghoul");
         int beef = EventHooks.onItemUseStart(ghoul, stack("minecraft:beef"),
                 InteractionHand.MAIN_HAND, 32);
         helper.assertTrue(beef == 32, "vanilla beef must stay usable, got " + beef);
@@ -318,9 +319,9 @@ public final class TensuraDelightGameTests {
     /** Each gate pays its own races, and the monster gate is really bound rather than fail-open. */
     @GameTest(template = "empty")
     public static void grant_gate_by_appetite_class(GameTestHelper helper) {
-        ServerPlayer human = eaterWith(helper, "tensura:human");
-        ServerPlayer ghoul = eaterWith(helper, "tensura:ghoul");
-        ServerPlayer slime = eaterWith(helper, "tensura:slime");
+        Player human = eaterWith(helper, "tensura:human");
+        Player ghoul = eaterWith(helper, "tensura:ghoul");
+        Player slime = eaterWith(helper, "tensura:slime");
         helper.assertTrue(Appetite.grantAllowed(human, stack("farmersdelight:beef_stew")),
                 "a human must be paid for an ordinary meal");
         helper.assertFalse(Appetite.grantAllowed(ghoul, stack("farmersdelight:beef_stew")),
@@ -396,12 +397,23 @@ public final class TensuraDelightGameTests {
     }
 
     /**
-     * A fresh mock server player wearing this race, for the appetite
-     * decisions. The registration is asserted, so an unknown id fails here
-     * instead of silently reading as "no race set".
+     * A fresh mock player wearing this race, for the appetite decisions.
+     *
+     * <p>Deliberately {@code makeMockPlayer} and not
+     * {@code makeMockServerPlayerInLevel}: the latter runs
+     * {@code PlayerList.placeNewPlayer}, which fires {@code playerLogin}, and
+     * ManasCore's login listener answers it by sending
+     * {@code manascore_config:sync_config_to_client} to a connection that
+     * never negotiated any channel - NeoForge's {@code NetworkRegistry} then
+     * throws "Payload ... may not be sent to the client!" out of the test. The
+     * plain mock player is only constructed, never placed, so no login event
+     * fires; every appetite decision here takes a {@code LivingEntity} anyway,
+     * which is what makes that substitution honest. The registration is
+     * asserted, so an unknown id fails here instead of silently reading as
+     * "no race set".
      */
-    private static ServerPlayer eaterWith(GameTestHelper helper, String raceId) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+    private static Player eaterWith(GameTestHelper helper, String raceId) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
         boolean set = RaceAPI.getRaceFrom(player).setRace(ResourceLocation.parse(raceId), false);
         helper.assertTrue(set, raceId + " must be a registered race of the pinned Tensura jar");
         return player;
