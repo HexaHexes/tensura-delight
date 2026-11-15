@@ -1,0 +1,7 @@
+{
+  "type": "aquaculture:diamond_fillet_knife",
+  "epGain": 0.003,
+  "evolution": "aquaculture:neptunium_fillet_knife",
+  "maxEP": 10000,
+  "minEP": 0
+}

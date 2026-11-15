@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:knightmetal_knife",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:gravitite_knife",
+  "maxEP": 6600,
+  "minEP": 0
+}

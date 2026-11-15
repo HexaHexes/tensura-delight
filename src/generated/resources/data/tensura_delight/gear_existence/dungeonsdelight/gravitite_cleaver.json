@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:gravitite_cleaver",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:diamond_cleaver",
+  "maxEP": 8300,
+  "minEP": 0
+}

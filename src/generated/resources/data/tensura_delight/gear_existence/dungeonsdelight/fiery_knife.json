@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:fiery_knife",
+  "epGain": 0.02,
+  "evolution": "tensura:kunai",
+  "maxEP": 52000,
+  "minEP": 0
+}

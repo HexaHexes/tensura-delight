@@ -1,0 +1,7 @@
+{
+  "type": "farmersdelight:golden_knife",
+  "epGain": 0.003,
+  "evolution": "farmersdelight:diamond_knife",
+  "maxEP": 3200,
+  "minEP": 0
+}

@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:steeleaf_knife",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:knightmetal_knife",
+  "maxEP": 4900,
+  "minEP": 0
+}

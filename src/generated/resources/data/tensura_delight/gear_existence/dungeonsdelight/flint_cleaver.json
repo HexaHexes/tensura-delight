@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:flint_cleaver",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:iron_cleaver",
+  "maxEP": 500,
+  "minEP": 0
+}

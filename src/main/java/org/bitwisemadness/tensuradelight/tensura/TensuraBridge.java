@@ -1,6 +1,8 @@
 package org.bitwisemadness.tensuradelight.tensura;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.fml.ModList;
 import org.bitwisemadness.tensuradelight.TensuraDelight;
 
@@ -55,5 +57,32 @@ public final class TensuraBridge {
 
     private static boolean acceptable(double amount) {
         return Double.isFinite(amount) && amount >= 0.0;
+    }
+
+    /**
+     * Adds {@code ep} to the stack's gear EP and runs Tensura's evolution
+     * pass over the new total.
+     *
+     * <p>The stack must be non-empty and the amount finite and positive.
+     * Initialising is idempotent, so a knife that already earned EP keeps it,
+     * and anything Tensura refuses logs a warning and answers {@code false}
+     * rather than failing the cut that asked for the grant.</p>
+     *
+     * @return whether the grant reached Tensura
+     */
+    public static boolean grantGearEp(Level level, ItemStack stack, double ep) {
+        if (level == null || stack == null || stack.isEmpty() || !isAvailable()) {
+            return false;
+        }
+        if (!Double.isFinite(ep) || ep <= 0.0) {
+            return false;
+        }
+        try {
+            GearAccess.grant(level, stack, ep);
+            return true;
+        } catch (Throwable failure) {
+            TensuraDelight.LOGGER.warn("Could not grant {} gear EP to {}", ep, stack, failure);
+            return false;
+        }
     }
 }
