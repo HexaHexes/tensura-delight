@@ -2,6 +2,6 @@
   "type": "dungeonsdelight:gravitite_knife",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:stained_knife",
-  "maxEP": 8300,
+  "maxEP": 6500,
   "minEP": 0
 }

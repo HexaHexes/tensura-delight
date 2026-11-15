@@ -2,6 +2,6 @@
   "type": "dungeonsdelight:zanite_knife",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:ironwood_knife",
-  "maxEP": 500,
+  "maxEP": 2200,
   "minEP": 0
 }

@@ -2,6 +2,6 @@
   "type": "dungeonsdelight:steel_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:steeleaf_cleaver",
-  "maxEP": 5800,
+  "maxEP": 4000,
   "minEP": 0
 }

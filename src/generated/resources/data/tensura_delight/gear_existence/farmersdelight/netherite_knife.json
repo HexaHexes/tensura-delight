@@ -1,7 +1,6 @@
 {
   "type": "farmersdelight:netherite_knife",
-  "epGain": 0.02,
-  "evolution": "tensura:kunai",
-  "maxEP": 52000,
+  "epGain": 0.003,
+  "maxEP": 10000,
   "minEP": 0
 }

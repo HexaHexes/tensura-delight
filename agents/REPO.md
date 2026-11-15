@@ -13,7 +13,7 @@ Brings Farmer's Delight, Brewin' And Chewin' and Dungeon's Delight into
 Tensura: Reincarnated's progression: delight meals grant EP and magicule and
 count toward eating progress, race appetite decides what those meals do,
 Tensura ingredients can be cooked in the delight workstations, and every
-knife and cleaver climbs its own gear ladder into Tensura's. Landed in
+knife and cleaver climbs the sword materials' gear ladder. Landed in
 phases - progression, race diets, cooking, knife gear evolution - one
 tracking issue each.
 
@@ -37,7 +37,7 @@ tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (16 tests). `expectedTests = 16`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (17 tests). `expectedTests = 17`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
 
@@ -213,10 +213,10 @@ into `run/mods` by `prepareGametestMods`.
   `JsonFilesProvider` round trip, together with the cutting tag and the cut
   rate. Family order was read from the staged jars, so no family needed the
   unordered-terminal exception:
-  - Farmer's Delight mirrors the pack's vanilla sword ladder: flint to iron,
-    gold parallel onto diamond, diamond to netherite, netherite into
-    `tensura:kunai`. Tiers come from FD's `ModMaterials.FLINT` and the vanilla
-    `Tiers` its five knives are constructed with.
+  - Farmer's Delight mirrors the pack's vanilla sword ladder: flint below
+    stone, to iron, gold parallel onto diamond, diamond to netherite. Tiers
+    come from FD's `ModMaterials.FLINT` and the vanilla `Tiers` its five
+    knives are constructed with.
   - Aquaculture follows its own fillet-knife recipes (planks, stone, iron,
     gold, diamond, neptunium) and its vanilla `Tiers` plus `AquaMats.NEPTUNIUM`;
     gold runs parallel onto diamond like the pack's golden sword.
@@ -228,13 +228,28 @@ into `run/mods` by `prepareGametestMods`.
     pack-vanilla material, which keeps the vanilla backbone of the ladder.
   - `aquaculturedelight:neptunium_knife` is a family of one, so it is its own
     top rung.
-- **Gates and rates:** the pack's tool spine - 500 on entry rungs (Aquaculture's
-  wooden knife takes the pack's 200 wooden-tool band), 3200 iron-class, 10000
-  netherite-class, 52000 on every top rung into `tensura:kunai`; Dungeon's
-  Delight's long ladders space the rungs between anchors evenly, rounded to
-  100. `epGain` is 0.003 below 18000 and 0.02 above, following
-  `tensura-iaf-growth`'s `epGainFor`; a datapack file may omit the key to take
-  the codec's 0.03 default.
+- **Gates and rates: sword parity, compressed.** Every family climbs the
+  vanilla sword material ladder - flint below stone - with gates global per
+  material, so an iron knife, an iron fillet knife and an iron-tier cleaver
+  all evolve at the same EP. The anchors are the sword chain's own, read from
+  tensura-iaf-growth: stone at 500, netherite at 10000 (where iaf-growth's
+  `netherite_sword` hands off to `tensura:low_magisteel_sword`). The ten
+  materials between them (iron, zanite, ironwood, steel, steeleaf,
+  knightmetal, gravitite, diamond, stained, fiery) space evenly, rounded to
+  100 - iaf-growth tracks only stone and netherite for vanilla, so the middle
+  materials have no sword rung to copy and take their even share: iron 1400,
+  diamond 7400. Each family's final rung - netherite tier, or the highest
+  material the family ships - **terminals at the 10000 cap**: `maxEP` 10000,
+  no `evolution` (Tensura's codec keeps evolution `Optional`; the
+  `top_rung_terminals_at_the_sword_gate` GameTest proves the real registry
+  took it). All shipped gates sit below 18000, so every `epGain` is 0.003;
+  a datapack file may omit the key to take the codec's 0.03 default.
+- **The kunai is deliberately not a rung.** No mod in the pack tags
+  `tensura:kunai` as a knife - verified by scanning every jar's tag files -
+  so the old netherite-into-kunai hand-off is gone and a kitchen knife's
+  story ends where a netherite sword's does. If a future pack wants the
+  hand-off back, the fix is a tag file putting `tensura:kunai` into
+  `c:tools/knife` plus a ladder entry, not a special case in code.
 - **`epGain` is a share of the killed mob's EP, not a flat rate.**
   `DeathHandler` pays `victimEP * epGain * (1 + 0.2*VIGOR + 0.2*GROWTH -
   0.2*LETHARGY)` to the killer's equipped item, so a knife accrues only while
