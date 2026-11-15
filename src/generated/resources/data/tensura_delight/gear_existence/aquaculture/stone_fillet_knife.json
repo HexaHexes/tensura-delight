@@ -1,0 +1,7 @@
+{
+  "type": "aquaculture:stone_fillet_knife",
+  "epGain": 0.003,
+  "evolution": "aquaculture:iron_fillet_knife",
+  "maxEP": 500,
+  "minEP": 0
+}

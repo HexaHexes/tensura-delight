@@ -11,9 +11,11 @@ restating them.
 
 Brings Farmer's Delight, Brewin' And Chewin' and Dungeon's Delight into
 Tensura: Reincarnated's progression: delight meals grant EP and magicule and
-count toward eating progress, race appetite decides what those meals do, and
-Tensura ingredients can be cooked in the delight workstations. Landed in three
-phases - progression, race diets, cooking - one tracking issue each.
+count toward eating progress, race appetite decides what those meals do,
+Tensura ingredients can be cooked in the delight workstations, and every
+knife and cleaver climbs its own gear ladder into Tensura's. Landed in
+phases - progression, race diets, cooking, knife gear evolution - one
+tracking issue each.
 
 **Dependencies**
 - Required: Minecraft, NeoForge, `tensura`, `manascore`, `farmersdelight` -
@@ -35,9 +37,65 @@ phases - progression, race diets, cooking - one tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (3 tests). `expectedTests = 3`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (6 tests). `expectedTests = 6`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
+
+**Knife gear evolution (phase 4)**
+- **Path ownership:** this repo owns `data/tensura_delight/gear_existence/**`
+  (one file per knife at `data/tensura_delight/gear_existence/<item namespace>/<item path>.json`),
+  `data/tensura_delight/tags/item/cutting_tools.json` and
+  `data/tensura_delight/ep_per_cut/**`. Never write into `data/tensura/**` or
+  `data/gearevolution/**`: `tensura-iaf-growth` and `tensura-iss-growth` own
+  paths there, and their registry rules bind this repo's entries too.
+- **Ladder table:** `gear/KnifeLadders.java` holds the five ladders with rungs
+  in climb order; `datagen/KnifeGearContent.java` emits them through the
+  `JsonFilesProvider` round trip, together with the cutting tag and the cut
+  rate. Family order was read from the staged jars, so no family needed the
+  unordered-terminal exception:
+  - Farmer's Delight mirrors the pack's vanilla sword ladder: flint to iron,
+    gold parallel onto diamond, diamond to netherite, netherite into
+    `tensura:kunai`. Tiers come from FD's `ModMaterials.FLINT` and the vanilla
+    `Tiers` its five knives are constructed with.
+  - Aquaculture follows its own fillet-knife recipes (planks, stone, iron,
+    gold, diamond, neptunium) and its vanilla `Tiers` plus `AquaMats.NEPTUNIUM`;
+    gold runs parallel onto diamond like the pack's golden sword.
+  - Dungeon's Delight orders its seven knives and thirteen cleavers by the
+    tier stats DD itself ships (`DDMaterials$DDCMaterials`, `DDItems`): mining
+    level, then speed, then uses. `TFItems` and `AEItems` registration order
+    backs the sub-orders (ironwood, steeleaf, knightmetal, fiery and zanite,
+    gravitite). Exact stat ties (iron/zanite, diamond/gravitite) go to the
+    pack-vanilla material, which keeps the vanilla backbone of the ladder.
+  - `aquaculturedelight:neptunium_knife` is a family of one, so it is its own
+    top rung.
+- **Gates and rates:** the pack's tool spine - 500 on entry rungs (Aquaculture's
+  wooden knife takes the pack's 200 wooden-tool band), 3200 iron-class, 10000
+  netherite-class, 52000 on every top rung into `tensura:kunai`; Dungeon's
+  Delight's long ladders space the rungs between anchors evenly, rounded to
+  100. `epGain` is 0.003 below 18000 and 0.02 above, following
+  `tensura-iaf-growth`'s `epGainFor`; a datapack file may omit the key to take
+  the codec's 0.03 default.
+- **`epGain` is a share of the killed mob's EP, not a flat rate.**
+  `DeathHandler` pays `victimEP * epGain * (1 + 0.2*VIGOR + 0.2*GROWTH -
+  0.2*LETHARGY)` to the killer's equipped item, so a knife accrues only while
+  it lands the kill. `victimEP` is the victim's magicule + aura
+  (`EnergyHelper.getBaseMaxEP`): a cow is 20 EP, a vanilla zombie 1400.
+- **Cutting grant:** `event/CuttingBoardHandler.java` observes
+  `PlayerInteractEvent.RightClickBlock` (server, main hand, not sneaking) and
+  grants the flat `ep_per_cut` through `TensuraBridge.grantGearEp` when the
+  held stack is in `tensura_delight:cutting_tools`, the clicked block's id
+  string is `farmersdelight:cutting_board`, and the board's public
+  `CuttingBoardBlockEntity.isEmpty()` / `isItemCarvingBoard()` say an
+  ingredient sits there. Both tag references ship as `{"id": ..., "required":
+  false}` - the shape Dungeon's Delight uses for its own optional references -
+  so removing a contributor shrinks the union instead of failing the tag load.
+  The event fires before Farmer's Delight's carve
+  consumes the stored item, so an empty or display-only board costs nothing.
+  Recipe compatibility between the held knife and the stored ingredient is not
+  checked: a cut attempt with no matching recipe still earns the grant. The
+  default `ep_per_cut` is 2.0, a tenth of a cow's 20 EP, so a stack of sixteen
+  cuts is worth a few early kills to the knife; it reloads from
+  `data/tensura_delight/ep_per_cut/*.json`.
 
 **Gotchas**
 - **Do not redistribute upstream material.** Tensura: Reincarnated and ManasCore

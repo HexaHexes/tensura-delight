@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:knightmetal_cleaver",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:gravitite_cleaver",
+  "maxEP": 7500,
+  "minEP": 0
+}

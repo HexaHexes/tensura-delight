@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:diamond_cleaver",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:stained_cleaver",
+  "maxEP": 9200,
+  "minEP": 0
+}

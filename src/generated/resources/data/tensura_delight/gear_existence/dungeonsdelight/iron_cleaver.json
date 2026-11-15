@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:iron_cleaver",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:zanite_cleaver",
+  "maxEP": 3200,
+  "minEP": 0
+}

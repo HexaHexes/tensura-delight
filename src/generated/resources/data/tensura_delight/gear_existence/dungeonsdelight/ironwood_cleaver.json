@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:ironwood_cleaver",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:steel_cleaver",
+  "maxEP": 4900,
+  "minEP": 0
+}

@@ -1,0 +1,7 @@
+{
+  "type": "dungeonsdelight:stained_knife",
+  "epGain": 0.003,
+  "evolution": "dungeonsdelight:fiery_knife",
+  "maxEP": 10000,
+  "minEP": 0
+}
