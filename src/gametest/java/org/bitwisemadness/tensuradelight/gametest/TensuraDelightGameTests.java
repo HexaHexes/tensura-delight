@@ -303,6 +303,12 @@ public final class TensuraDelightGameTests {
                 "beer must be a drink");
         helper.assertTrue(stack("farmersdelight:apple_cider").is(Appetite.DRINKS),
                 "apple cider must be a drink");
+        // Reaches the tag only through #farmersdelight:drinks, written by both
+        // FD and DD at the same path: if those files shadowed rather than
+        // unioned, this item would be missing and the assertion would fail.
+        helper.assertTrue(stack("dungeonsdelight:liveroot_beer").is(Appetite.DRINKS),
+                "a Dungeon's Delight drink must reach the tag through the union of "
+                        + "#farmersdelight:drinks");
         helper.assertTrue(stack("dungeonsdelight:ghoulash").is(Appetite.MONSTER_MEALS),
                 "ghoulash must be a monster meal");
         helper.assertTrue(stack("dungeonsdelight:spider_bisque").is(Appetite.MONSTER_MEALS),

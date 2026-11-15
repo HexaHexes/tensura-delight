@@ -106,15 +106,27 @@ into `run/mods` by `prepareGametestMods`.
   produced it, the same class of resource-gated action as phase 4's cutting.
   B&C *foods* all carry real nutrition (creamy_onion_soup 12, cheesy_pasta 14,
   kippers 6) and need no override.
-- **Upstream collision: both the Farmer's Delight and the Dungeon's Delight
-  jar ship `data/farmersdelight/tags/item/drinks.json` with different
-  contents** (FD: milk_bottle, apple_cider, melon_juice, hot_cocoa; DD: six
-  monster drinks). One shadows the other at runtime, so the shipped
-  `tensura_delight:drinks` never references `#farmersdelight:drinks`: it
-  references `#brewinandchewin:fermented_drinks` (only B&C ships that one) and
-  lists the ten FD/DD drinks explicitly as entries, the optional ones with
-  `{"id": ..., "required": false}`. If a host ever fixes the collision, the
-  explicit list is still correct, only redundant.
+- **Same-path tag files union, they do not shadow.** Both the Farmer's Delight
+  and the Dungeon's Delight jar ship `data/farmersdelight/tags/item/drinks.json`
+  with different contents (FD: milk_bottle, apple_cider, melon_juice, hot_cocoa;
+  DD: six monster drinks) - and that is *not* a collision.
+  `TagLoader.load` gathers a path with `listMatchingResourceStacks`, which
+  returns every pack's copy of that path as a stack, then loops the whole stack
+  and appends each `TagFile`'s entries to one accumulator. It calls
+  `List.clear()` only when a file sets `"replace": true`; neither host file
+  does, so `farmersdelight:drinks` resolves to all ten. `replace` defaults to
+  `false`, which is why the shipped appetite tags carry no `replace` key at all
+  (`AppetiteTagsContent.validate()` fails the datagen run if one appears): they
+  union with whatever a pack contributes rather than overriding it.
+  Consequence for this repo: the shipped `tensura_delight:drinks` simply
+  references `#farmersdelight:drinks` beside
+  `#brewinandchewin:fermented_drinks`, both with `{"id": ..., "required":
+  false}`. An explicit list of the ten items was tried first, on the mistaken
+  belief that the two files shadowed each other; it produced the same ten items
+  but would have gone stale the moment a host added a drink, so the reference
+  replaced it. GameTest `appetite_item_tags_resolve` pins the union: it asserts
+  `dungeonsdelight:liveroot_beer`, which only reaches our tag through FD's
+  copy of that shared path.
 - **`#capital_tensura_reincarnated:monsters` is inert on purpose.** That mod
   is not in the pack and currently ships its race tags under the
   `tensura_faction_spawn` namespace rather than its own, so the reference
