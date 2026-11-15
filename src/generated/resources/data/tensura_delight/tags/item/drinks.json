@@ -1,0 +1,36 @@
+{
+  "values": [
+    {
+      "id": "#brewinandchewin:fermented_drinks",
+      "required": false
+    },
+    "farmersdelight:milk_bottle",
+    "farmersdelight:apple_cider",
+    "farmersdelight:melon_juice",
+    "farmersdelight:hot_cocoa",
+    {
+      "id": "dungeonsdelight:spider_bubble_tea",
+      "required": false
+    },
+    {
+      "id": "dungeonsdelight:bloody_mary",
+      "required": false
+    },
+    {
+      "id": "dungeonsdelight:taro_milk_tea",
+      "required": false
+    },
+    {
+      "id": "dungeonsdelight:trial_freakshake",
+      "required": false
+    },
+    {
+      "id": "dungeonsdelight:liveroot_beer",
+      "required": false
+    },
+    {
+      "id": "dungeonsdelight:skyberry_brew",
+      "required": false
+    }
+  ]
+}

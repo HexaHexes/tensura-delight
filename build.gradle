@@ -40,6 +40,12 @@ configurations {
 neoForge {
     version = project.neo_version
 
+    // Unit tests read vanilla types (ResourceLocation, TagKey) from Appetite's
+    // public surface, so the test source set needs the modding artifacts on
+    // its classpath too. Nothing boots the game: the classes are simply
+    // loadable, which is all the headless appetite tests touch.
+    addModdingDependenciesTo(sourceSets.test)
+
     runs {
         client {
             client()
@@ -211,7 +217,7 @@ tasks.matching {
 // Grade the run on the log summary: the task's exit code is not a reliable
 // signal. Keep expectedTests in sync with the @GameTest methods.
 tasks.matching { it.name == 'runGameTestServer' }.configureEach {
-    def expectedTests = 9
+    def expectedTests = 16
     doLast {
         def log = file('run/logs/latest.log')
         if (!log.exists()) {

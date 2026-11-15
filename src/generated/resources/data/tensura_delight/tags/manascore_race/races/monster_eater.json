@@ -1,0 +1,24 @@
+{
+  "values": [
+    {
+      "id": "#tensura:undead",
+      "required": false
+    },
+    {
+      "id": "#tensura:necromancer",
+      "required": false
+    },
+    {
+      "id": "#tensura:daemon",
+      "required": false
+    },
+    {
+      "id": "#tensura:slime",
+      "required": false
+    },
+    {
+      "id": "#capital_tensura_reincarnated:monsters",
+      "required": false
+    }
+  ]
+}

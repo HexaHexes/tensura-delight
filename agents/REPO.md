@@ -37,9 +37,89 @@ tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (9 tests). `expectedTests = 9`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (16 tests). `expectedTests = 16`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
+
+**Race appetite (phase 2)**
+- **Path ownership:** this repo owns `data/tensura_delight/tags/manascore_race/races/**`
+  (the four gates: `does_not_eat`, `monster_eater`, `eats`, `drinker`) and
+  `data/tensura_delight/tags/item/{monster_meals,drinks}.json`. All six are
+  built by `datagen/AppetiteTagsContent.java` through the `JsonFilesProvider`
+  round trip, so `runData` ships them and the file paths are derived from the
+  very ids `appetite/Appetite.java` tests at runtime - datagen and code cannot
+  name two different tags. `validate()` fails the datagen run if a default the
+  code relies on would go missing (an empty `eats`/`drinker` is deliberate, a
+  dropped `#tensura:` reference is not).
+- **Race-read gotcha:** race identity is read only through ManasCore -
+  `RaceAPI.getRaceFrom(entity).getRace()` -> `Optional<ManasRaceInstance>` ->
+  `instance.is(TagKey<ManasRace>)`. Never compare race-name strings. Race tags
+  are `data/<namespace>/tags/manascore_race/races/<path>.json` (the race
+  registry's own directory, not `tags/item/` or `tags/entity_type/`), created
+  with `TagKey.create(RaceAPI.getRaceRegistryKey(), id)`. The pattern this
+  copies is `capital-tensura-reincarnated`'s `RaceTags.java`.
+- **Every ManasCore call sits behind `race/RaceBridge`.** `RaceBridge` holds no
+  ManasCore type in its signature and checks `ModList.isLoaded("manascore")`
+  before delegating to `RaceAccess` - the exact lazy-resolution trick
+  `TensuraBridge` uses, because the JVM only resolves a class's references when
+  it is first loaded. Never reference `RaceAccess` directly. Both answers fail
+  open on any failure: a race read that cannot happen must not become a silent
+  refusal of food, nor a grant the pack meant to withhold.
+- **Empty gate = no restriction (fail-open) needs a root-registry lookup.** A
+  tag with no members must *allow*, so `RaceAccess.tagHasMembers` resolves the
+  race registry through `BuiltInRegistries.REGISTRY` by the tag's own key and
+  reads `getTag(tag).size()`; unbound, empty or a failed lookup all read as "no
+  members" -> allowance. The GameTest `grant_gate_by_appetite_class` pins this:
+  if the lookup broke, `monster_eater` would fail open and a human would be
+  paid for a monster meal, failing the assertion the wrong way round.
+- **Gate order is monster, then drink, then plain food** (`Appetite.gateFor`).
+  Five Dungeon's Delight drinks (`spider_bubble_tea`, `bloody_mary`,
+  `taro_milk_tea`, `trial_freakshake`, `skyberry_brew`) are listed in DD's own
+  `monster_foods` too, and a monster meal must stay behind `monster_eater`
+  whichever other tag it matches. Pinned by `AppetiteTest`.
+- **Refusal cancels `LivingEntityUseItemEvent.Start`, never `Finish`.**
+  `Finish` is post-hoc and *not* cancellable: it fires after nutrition and
+  effects are already applied, so "no effects" is only achievable by cancelling
+  the start. Proven from the patched bytecode: a cancelled `Start` makes
+  `EventHooks.onItemUseStart` return `-1`, and `LivingEntity.startUsingItem`
+  then returns immediately - no consumption, no nutrition, no effects, no
+  `Finish`. The refusal test is `EventHooks.onItemUseStart(...) == -1`; there
+  is no mixin anywhere. Scope is the three delight namespaces **and** an
+  `EAT`/`DRINK` use animation, which `Item.getUseAnimation` answers from the
+  food component alone, so a knife or another mod's steak never reaches the
+  race read.
+- **Dungeon's Delight's effect path is deliberately untouched.** The DD jar
+  contains *zero* ManasCore or Tensura references - verified by scanning every
+  class file. `UndeadFoodItem.finishUsingItem` picks between
+  `DDUtil.MONSTER_EFFECTS` and `DDUtil.NORMAL_EFFECTS` off a `hasEffect`
+  predicate and applies the swap to whoever ate, and `BoozeItem` applies Tipsy
+  to whoever drank. Per the user's decision those land exactly as they always
+  have (Tensura's own rules still apply on top); this mod only gates **who
+  receives the EP/magicule grant**. Do not "fix" monsterisation to be
+  race-aware - it is out of scope and would fight the host's design.
+- **All sixteen Brewin' And Chewin drinks carry `nutrition 0` and
+  `alwaysEdible()`** (`BoozeItem.use` calls `player.canEat(canAlwaysEat())`),
+  so a scaled grant would compute to zero and be refused as no grant at all.
+  They therefore ship as fixed `overrides` in `MealGrants.DEFAULT_OVERRIDES` -
+  2 EP and 10 magicule, one nutrition's worth at the shipped scale. Because
+  booze drinks at full hunger, what bounds the grant is the brewing that
+  produced it, the same class of resource-gated action as phase 4's cutting.
+  B&C *foods* all carry real nutrition (creamy_onion_soup 12, cheesy_pasta 14,
+  kippers 6) and need no override.
+- **Upstream collision: both the Farmer's Delight and the Dungeon's Delight
+  jar ship `data/farmersdelight/tags/item/drinks.json` with different
+  contents** (FD: milk_bottle, apple_cider, melon_juice, hot_cocoa; DD: six
+  monster drinks). One shadows the other at runtime, so the shipped
+  `tensura_delight:drinks` never references `#farmersdelight:drinks`: it
+  references `#brewinandchewin:fermented_drinks` (only B&C ships that one) and
+  lists the ten FD/DD drinks explicitly as entries, the optional ones with
+  `{"id": ..., "required": false}`. If a host ever fixes the collision, the
+  explicit list is still correct, only redundant.
+- **`#capital_tensura_reincarnated:monsters` is inert on purpose.** That mod
+  is not in the pack and currently ships its race tags under the
+  `tensura_faction_spawn` namespace rather than its own, so the reference
+  resolves to nothing today; `required: false` keeps it a self-activating
+  extension point the day it ships correctly.
 
 **Station recipes (phase 3)**
 - **Path ownership:** this repo owns `data/tensura_delight/recipe/**` - one

@@ -2,6 +2,7 @@ build/
 .gradle/
 out/
 run/
+logs/
 *.iml
 .idea/
 repo/

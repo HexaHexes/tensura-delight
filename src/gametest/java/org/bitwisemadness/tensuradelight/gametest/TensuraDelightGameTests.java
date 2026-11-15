@@ -2,6 +2,7 @@ package org.bitwisemadness.tensuradelight.gametest;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.manasmods.manascore.race.api.RaceAPI;
 import io.github.manasmods.tensura.data.existence.gear.GearExistenceData;
 import io.github.manasmods.tensura.registry.data.TensuraCustomData;
 import java.util.HashSet;
@@ -16,17 +17,21 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.yirmiri.dungeonsdelight.common.block.monster_pot.MonsterPotRecipe;
 import org.bitwisemadness.tensuradelight.TensuraDelight;
+import org.bitwisemadness.tensuradelight.appetite.Appetite;
 import org.bitwisemadness.tensuradelight.food.MealGrants;
 import org.bitwisemadness.tensuradelight.gear.CuttingGrants;
 import org.bitwisemadness.tensuradelight.gear.CuttingTools;
@@ -43,11 +48,13 @@ import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipeInput;
 /**
  * Headless proof of the shipped wiring: the mod boots, the reload listeners
  * have installed the generated tables, Tensura is really on the run closure
- * with an entry for every knife, the cutting tag resolves, and the station
- * recipes load through the recipe manager and match their stations' inputs.
+ * with an entry for every knife, the cutting tag resolves, the station
+ * recipes load through the recipe manager and match their stations' inputs,
+ * and race appetite refuses and gates delight food through the shipped tags.
  *
  * <p>Keep {@code expectedTests} in {@code build.gradle} in sync with the
- * number of {@code @GameTest} methods here, or the harness fails the run.</p>
+ * number of {@code @GameTest} methods here (16 today), or the harness fails
+ * the run.</p>
  */
 @GameTestHolder(TensuraDelight.MOD_ID)
 @PrefixGameTestTemplate(false)
@@ -238,6 +245,107 @@ public final class TensuraDelightGameTests {
         helper.succeed();
     }
 
+    /** The shipped race tags bind: a ghoul refuses delight food, a human and a slime do not. */
+    @GameTest(template = "empty")
+    public static void appetite_race_classifies_refusal(GameTestHelper helper) {
+        ItemStack stew = stack("farmersdelight:beef_stew");
+        helper.assertTrue(Appetite.refusesUse(eaterWith(helper, "tensura:ghoul"), stew),
+                "a ghoul must refuse delight food");
+        helper.assertFalse(Appetite.refusesUse(eaterWith(helper, "tensura:human"), stew),
+                "a human must eat delight food");
+        helper.assertFalse(Appetite.refusesUse(eaterWith(helper, "tensura:slime"), stew),
+                "a slime is a monster eater, not a non-eater");
+        helper.succeed();
+    }
+
+    /** A non-eater never gets as far as using delight food: the use start cancels. */
+    @GameTest(template = "empty")
+    public static void non_eater_refuses_delight_food_at_use_start(GameTestHelper helper) {
+        ServerPlayer ghoul = eaterWith(helper, "tensura:ghoul");
+        int started = EventHooks.onItemUseStart(ghoul, stack("farmersdelight:beef_stew"),
+                InteractionHand.MAIN_HAND, 32);
+        helper.assertTrue(started == -1,
+                "a ghoul must be refused delight food at use start, got " + started);
+        helper.succeed();
+    }
+
+    /** An unrefused eater is completely unaffected: food and drink both start with their duration. */
+    @GameTest(template = "empty")
+    public static void eater_starts_delight_food_normally(GameTestHelper helper) {
+        ServerPlayer human = eaterWith(helper, "tensura:human");
+        int stew = EventHooks.onItemUseStart(human, stack("farmersdelight:beef_stew"),
+                InteractionHand.MAIN_HAND, 32);
+        helper.assertTrue(stew == 32, "a human must start beef stew, got " + stew);
+        int beer = EventHooks.onItemUseStart(human, stack("brewinandchewin:beer"),
+                InteractionHand.MAIN_HAND, 32);
+        helper.assertTrue(beer == 32, "a human must start a drink, got " + beer);
+        helper.succeed();
+    }
+
+    /** Refusal only ever reaches delight food: another namespace and a non-food stay usable. */
+    @GameTest(template = "empty")
+    public static void refusal_is_scoped_to_delight_food(GameTestHelper helper) {
+        ServerPlayer ghoul = eaterWith(helper, "tensura:ghoul");
+        int beef = EventHooks.onItemUseStart(ghoul, stack("minecraft:beef"),
+                InteractionHand.MAIN_HAND, 32);
+        helper.assertTrue(beef == 32, "vanilla beef must stay usable, got " + beef);
+        int knife = EventHooks.onItemUseStart(ghoul, stack("farmersdelight:flint_knife"),
+                InteractionHand.MAIN_HAND, 32);
+        helper.assertTrue(knife == 32, "a delight knife is not food, got " + knife);
+        helper.succeed();
+    }
+
+    /** The two shipped item gates resolve from the generated tag files. */
+    @GameTest(template = "empty")
+    public static void appetite_item_tags_resolve(GameTestHelper helper) {
+        helper.assertTrue(stack("brewinandchewin:beer").is(Appetite.DRINKS),
+                "beer must be a drink");
+        helper.assertTrue(stack("farmersdelight:apple_cider").is(Appetite.DRINKS),
+                "apple cider must be a drink");
+        helper.assertTrue(stack("dungeonsdelight:ghoulash").is(Appetite.MONSTER_MEALS),
+                "ghoulash must be a monster meal");
+        helper.assertTrue(stack("dungeonsdelight:spider_bisque").is(Appetite.MONSTER_MEALS),
+                "spider bisque must be a monster meal");
+        helper.assertFalse(stack("farmersdelight:beef_stew").is(Appetite.DRINKS)
+                        || stack("farmersdelight:beef_stew").is(Appetite.MONSTER_MEALS),
+                "beef stew must be in neither gate");
+        helper.assertFalse(stack("farmersdelight:flint_knife").is(Appetite.DRINKS)
+                        || stack("farmersdelight:flint_knife").is(Appetite.MONSTER_MEALS),
+                "a knife must be in neither gate");
+        helper.succeed();
+    }
+
+    /** Each gate pays its own races, and the monster gate is really bound rather than fail-open. */
+    @GameTest(template = "empty")
+    public static void grant_gate_by_appetite_class(GameTestHelper helper) {
+        ServerPlayer human = eaterWith(helper, "tensura:human");
+        ServerPlayer ghoul = eaterWith(helper, "tensura:ghoul");
+        ServerPlayer slime = eaterWith(helper, "tensura:slime");
+        helper.assertTrue(Appetite.grantAllowed(human, stack("farmersdelight:beef_stew")),
+                "a human must be paid for an ordinary meal");
+        helper.assertFalse(Appetite.grantAllowed(ghoul, stack("farmersdelight:beef_stew")),
+                "a ghoul must not be paid for anything");
+        helper.assertTrue(Appetite.grantAllowed(slime, stack("dungeonsdelight:ghoulash")),
+                "a slime must be paid for a monster meal");
+        helper.assertFalse(Appetite.grantAllowed(human, stack("dungeonsdelight:ghoulash")),
+                "a human must not be paid for a monster meal; a broken root-registry lookup "
+                        + "would fail open and pass this assertion the wrong way round");
+        helper.assertTrue(Appetite.grantAllowed(human, stack("brewinandchewin:beer")),
+                "the empty drinker gate must pay every race");
+        helper.succeed();
+    }
+
+    /** The drinks joined the shipped table as fixed grants, which beats their zero nutrition. */
+    @GameTest(template = "empty")
+    public static void drink_grants_are_tabled(GameTestHelper helper) {
+        MealGrants.Grant beer = MealGrants.current().overrides().get("brewinandchewin:beer");
+        helper.assertTrue(new MealGrants.Grant(2.0, 10.0).equals(beer),
+                "beer must carry the fixed 2 EP and 10 magicule grant, got " + beer);
+        helper.assertTrue(MealGrants.grantFor("brewinandchewin:kombucha", 0).isPresent(),
+                "kombucha must pay despite its zero nutrition");
+        helper.succeed();
+    }
+
     private static Recipe<?> recipeById(GameTestHelper helper, String id) {
         Optional<RecipeHolder<?>> found =
                 helper.getLevel().getRecipeManager().byKey(ResourceLocation.parse(id));
@@ -285,6 +393,18 @@ public final class TensuraDelightGameTests {
 
     private static ItemStack stack(String itemId) {
         return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId)));
+    }
+
+    /**
+     * A fresh mock server player wearing this race, for the appetite
+     * decisions. The registration is asserted, so an unknown id fails here
+     * instead of silently reading as "no race set".
+     */
+    private static ServerPlayer eaterWith(GameTestHelper helper, String raceId) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        boolean set = RaceAPI.getRaceFrom(player).setRace(ResourceLocation.parse(raceId), false);
+        helper.assertTrue(set, raceId + " must be a registered race of the pinned Tensura jar");
+        return player;
     }
 
     /** Every {@code tensura:} item id the shipped table references, walked from the JSON. */
