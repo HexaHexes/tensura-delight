@@ -2,6 +2,6 @@
   "type": "dungeonsdelight:golden_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:diamond_cleaver",
-  "maxEP": 3200,
+  "maxEP": 1400,
   "minEP": 0
 }

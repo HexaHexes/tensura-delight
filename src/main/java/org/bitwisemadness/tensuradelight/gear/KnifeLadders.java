@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import org.bitwisemadness.tensuradelight.TensuraDelight;
 
@@ -32,12 +31,13 @@ public final class KnifeLadders {
     public static final String DIRECTORY = "gear_existence";
 
     /**
-     * Evolution targets outside this table. {@code tensura:kunai} is
-     * tensura-iaf-growth's knife rung (0..52000 into
-     * {@code tensura:pure_magisteel_kunai}), the hand-off every ladder tops out
-     * at, mirroring how {@code netherite_sword} hands off to magisteel.
+     * The gate every family tops out at: the netherite sword's own 10000 EP
+     * band, read from tensura-iaf-growth's {@code netherite_sword} rung
+     * (0..10000 into {@code tensura:low_magisteel_sword}). A top rung fills
+     * its band to here and stops - the kunai is deliberately not a rung, since
+     * no mod in the pack tags {@code tensura:kunai} as a knife.
      */
-    public static final Set<String> EXTERNAL_TARGETS = Set.of("tensura:kunai");
+    public static final int TOP_GATE = 10000;
 
     private static final String ID_NAMESPACE_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_.-";
     private static final String ID_PATH_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_./-";
@@ -199,54 +199,73 @@ public final class KnifeLadders {
     }
 
     /**
-     * The ladders themselves: gates follow the pack's tool spine (500 entry,
-     * 3200 iron-class, 10000 netherite-class, 52000 top hand-off), with rungs
-     * between anchors spaced evenly and rounded to 100. Gold sits parallel
-     * onto diamond like the pack's golden sword, and every ladder's top joins
-     * tensura-iaf-growth's kunai rung.
+     * The ladders themselves: every family climbs the vanilla sword material
+     * ladder - flint below stone - compressed under the netherite sword's own
+     * gate. Gates are global per material, so an iron knife, an iron fillet
+     * knife and an iron-tier cleaver all evolve at the same EP: the sword
+     * chain anchors stone at 500 and netherite at 10000, the ten materials
+     * between them space evenly rounded to 100 - which is where iron's 1400
+     * and diamond's 7400 come from, since iaf-growth tracks only stone and
+     * netherite for vanilla and the middle materials have no sword rung to
+     * copy - and each family's final rung, netherite tier or the highest
+     * material the family ships, terminals at the 10000 cap with no further
+     * evolution. Gold sits parallel onto diamond like the pack's golden
+     * sword, and Aquaculture's wooden knife keeps the pack's 200 below-stone
+     * band.
      */
     private static List<Ladder> buildLadders() {
         return List.of(
                 new Ladder("farmersdelight_knives", List.of(
                         rung("farmersdelight:flint_knife", 500, 0.003, "farmersdelight:iron_knife"),
-                        rung("farmersdelight:iron_knife", 3200, 0.003, "farmersdelight:diamond_knife"),
-                        rung("farmersdelight:golden_knife", 3200, 0.003, "farmersdelight:diamond_knife"),
-                        rung("farmersdelight:diamond_knife", 10000, 0.003, "farmersdelight:netherite_knife"),
-                        rung("farmersdelight:netherite_knife", 52000, 0.02, "tensura:kunai"))),
+                        rung("farmersdelight:iron_knife", 1400, 0.003, "farmersdelight:diamond_knife"),
+                        rung("farmersdelight:golden_knife", 1400, 0.003, "farmersdelight:diamond_knife"),
+                        rung("farmersdelight:diamond_knife", 7400, 0.003, "farmersdelight:netherite_knife"),
+                        terminal("farmersdelight:netherite_knife"))),
                 new Ladder("aquaculture_fillet_knives", List.of(
                         rung("aquaculture:wooden_fillet_knife", 200, 0.003, "aquaculture:stone_fillet_knife"),
                         rung("aquaculture:stone_fillet_knife", 500, 0.003, "aquaculture:iron_fillet_knife"),
-                        rung("aquaculture:iron_fillet_knife", 3200, 0.003, "aquaculture:diamond_fillet_knife"),
-                        rung("aquaculture:gold_fillet_knife", 3200, 0.003, "aquaculture:diamond_fillet_knife"),
-                        rung("aquaculture:diamond_fillet_knife", 10000, 0.003, "aquaculture:neptunium_fillet_knife"),
-                        rung("aquaculture:neptunium_fillet_knife", 52000, 0.02, "tensura:kunai"))),
+                        rung("aquaculture:iron_fillet_knife", 1400, 0.003, "aquaculture:diamond_fillet_knife"),
+                        rung("aquaculture:gold_fillet_knife", 1400, 0.003, "aquaculture:diamond_fillet_knife"),
+                        rung("aquaculture:diamond_fillet_knife", 7400, 0.003, "aquaculture:neptunium_fillet_knife"),
+                        terminal("aquaculture:neptunium_fillet_knife"))),
                 new Ladder("aquaculturedelight_knives", List.of(
-                        rung("aquaculturedelight:neptunium_knife", 52000, 0.02, "tensura:kunai"))),
+                        terminal("aquaculturedelight:neptunium_knife"))),
                 new Ladder("dungeonsdelight_knives", List.of(
-                        rung("dungeonsdelight:zanite_knife", 500, 0.003, "dungeonsdelight:ironwood_knife"),
-                        rung("dungeonsdelight:ironwood_knife", 3200, 0.003, "dungeonsdelight:steeleaf_knife"),
-                        rung("dungeonsdelight:steeleaf_knife", 4900, 0.003, "dungeonsdelight:knightmetal_knife"),
-                        rung("dungeonsdelight:knightmetal_knife", 6600, 0.003, "dungeonsdelight:gravitite_knife"),
-                        rung("dungeonsdelight:gravitite_knife", 8300, 0.003, "dungeonsdelight:stained_knife"),
-                        rung("dungeonsdelight:stained_knife", 10000, 0.003, "dungeonsdelight:fiery_knife"),
-                        rung("dungeonsdelight:fiery_knife", 52000, 0.02, "tensura:kunai"))),
+                        rung("dungeonsdelight:zanite_knife", 2200, 0.003, "dungeonsdelight:ironwood_knife"),
+                        rung("dungeonsdelight:ironwood_knife", 3100, 0.003, "dungeonsdelight:steeleaf_knife"),
+                        rung("dungeonsdelight:steeleaf_knife", 4800, 0.003, "dungeonsdelight:knightmetal_knife"),
+                        rung("dungeonsdelight:knightmetal_knife", 5700, 0.003, "dungeonsdelight:gravitite_knife"),
+                        rung("dungeonsdelight:gravitite_knife", 6500, 0.003, "dungeonsdelight:stained_knife"),
+                        rung("dungeonsdelight:stained_knife", 8300, 0.003, "dungeonsdelight:fiery_knife"),
+                        terminal("dungeonsdelight:fiery_knife"))),
                 new Ladder("dungeonsdelight_cleavers", List.of(
                         rung("dungeonsdelight:flint_cleaver", 500, 0.003, "dungeonsdelight:iron_cleaver"),
-                        rung("dungeonsdelight:iron_cleaver", 3200, 0.003, "dungeonsdelight:zanite_cleaver"),
-                        rung("dungeonsdelight:golden_cleaver", 3200, 0.003, "dungeonsdelight:diamond_cleaver"),
-                        rung("dungeonsdelight:zanite_cleaver", 4100, 0.003, "dungeonsdelight:ironwood_cleaver"),
-                        rung("dungeonsdelight:ironwood_cleaver", 4900, 0.003, "dungeonsdelight:steel_cleaver"),
-                        rung("dungeonsdelight:steel_cleaver", 5800, 0.003, "dungeonsdelight:steeleaf_cleaver"),
-                        rung("dungeonsdelight:steeleaf_cleaver", 6600, 0.003, "dungeonsdelight:knightmetal_cleaver"),
-                        rung("dungeonsdelight:knightmetal_cleaver", 7500, 0.003, "dungeonsdelight:gravitite_cleaver"),
-                        rung("dungeonsdelight:gravitite_cleaver", 8300, 0.003, "dungeonsdelight:diamond_cleaver"),
-                        rung("dungeonsdelight:diamond_cleaver", 9200, 0.003, "dungeonsdelight:stained_cleaver"),
-                        rung("dungeonsdelight:stained_cleaver", 10000, 0.003, "dungeonsdelight:fiery_cleaver"),
-                        rung("dungeonsdelight:fiery_cleaver", 31000, 0.02, "dungeonsdelight:netherite_cleaver"),
-                        rung("dungeonsdelight:netherite_cleaver", 52000, 0.02, "tensura:kunai"))));
+                        rung("dungeonsdelight:iron_cleaver", 1400, 0.003, "dungeonsdelight:zanite_cleaver"),
+                        rung("dungeonsdelight:golden_cleaver", 1400, 0.003, "dungeonsdelight:diamond_cleaver"),
+                        rung("dungeonsdelight:zanite_cleaver", 2200, 0.003, "dungeonsdelight:ironwood_cleaver"),
+                        rung("dungeonsdelight:ironwood_cleaver", 3100, 0.003, "dungeonsdelight:steel_cleaver"),
+                        rung("dungeonsdelight:steel_cleaver", 4000, 0.003, "dungeonsdelight:steeleaf_cleaver"),
+                        rung("dungeonsdelight:steeleaf_cleaver", 4800, 0.003, "dungeonsdelight:knightmetal_cleaver"),
+                        rung("dungeonsdelight:knightmetal_cleaver", 5700, 0.003, "dungeonsdelight:gravitite_cleaver"),
+                        rung("dungeonsdelight:gravitite_cleaver", 6500, 0.003, "dungeonsdelight:diamond_cleaver"),
+                        rung("dungeonsdelight:diamond_cleaver", 7400, 0.003, "dungeonsdelight:stained_cleaver"),
+                        rung("dungeonsdelight:stained_cleaver", 8300, 0.003, "dungeonsdelight:fiery_cleaver"),
+                        rung("dungeonsdelight:fiery_cleaver", 9100, 0.003, "dungeonsdelight:netherite_cleaver"),
+                        terminal("dungeonsdelight:netherite_cleaver"))));
     }
 
     private static Rung rung(String itemId, int maxEp, Double epGain, String evolution) {
         return new Rung(itemId, 0, maxEp, epGain, evolution);
+    }
+
+    /**
+     * A family's top rung: it fills its band to the sword's netherite gate
+     * and stops there, with no further evolution - the shape
+     * tensura-iaf-growth's own terminals (the goblin club, the severer blade)
+     * use, minus their unbounded band, since a kitchen knife's story ends
+     * where a netherite sword's does.
+     */
+    private static Rung terminal(String itemId) {
+        return new Rung(itemId, 0, TOP_GATE, 0.003, null);
     }
 }

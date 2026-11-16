@@ -2,6 +2,7 @@ package org.bitwisemadness.tensuradelight.gear;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
@@ -23,15 +24,25 @@ class KnifeLaddersTest {
     private static final int COVERED_ITEMS = 32;
 
     @Test
-    void everyEvolutionTargetIsOursOrAllowlisted() {
+    void everyEvolutionTargetIsOurs() {
         Map<String, KnifeLadders.Rung> table = KnifeLadders.byItem();
         table.forEach((itemId, rung) -> {
             String target = rung.evolution();
             if (target != null) {
-                assertTrue(table.containsKey(target) || KnifeLadders.EXTERNAL_TARGETS.contains(target),
+                assertTrue(table.containsKey(target),
                         itemId + " evolves into unowned target " + target);
             }
         });
+    }
+
+    @Test
+    void topRungsTerminalAtTheSwordGate() {
+        for (KnifeLadders.Ladder ladder : KnifeLadders.ladders()) {
+            KnifeLadders.Rung top = ladder.rungs().get(ladder.rungs().size() - 1);
+            assertNull(top.evolution(), ladder.name() + " must top out with no further evolution");
+            assertEquals(KnifeLadders.TOP_GATE, top.maxEp(),
+                    ladder.name() + " must finish at the sword's netherite gate");
+        }
     }
 
     @Test

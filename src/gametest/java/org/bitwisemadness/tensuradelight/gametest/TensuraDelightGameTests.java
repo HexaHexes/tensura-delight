@@ -54,7 +54,7 @@ import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipeInput;
  * and race appetite refuses and gates delight food through the shipped tags.
  *
  * <p>Keep {@code expectedTests} in {@code build.gradle} in sync with the
- * number of {@code @GameTest} methods here (16 today), or the harness fails
+ * number of {@code @GameTest} methods here (17 today), or the harness fails
  * the run.</p>
  */
 @GameTestHolder(TensuraDelight.MOD_ID)
@@ -117,6 +117,31 @@ public final class TensuraDelightGameTests {
         helper.assertTrue(CuttingGrants.hasLoaded(), "the ep_per_cut reload listener has not run");
         helper.assertTrue(table.equals(CuttingGrants.defaults()),
                 "the loaded table must equal the shipped default, ep per cut: " + table.epPerCut());
+        helper.succeed();
+    }
+
+    /**
+     * Tensura's registry accepted the terminal shape: the top rung loads with
+     * no evolution and the sword's netherite gate. This is the check that
+     * matters for the kunai removal - a capped terminal is our data's shape,
+     * and only the real registry proves the codec took it.
+     */
+    @GameTest(template = "empty")
+    public static void top_rung_terminals_at_the_sword_gate(GameTestHelper helper) {
+        Registry<GearExistenceData> registry =
+                helper.getLevel().registryAccess().registryOrThrow(TensuraCustomData.GEAR_EXISTENCE);
+        GearExistenceData netherite = null;
+        for (GearExistenceData data : registry) {
+            if ("farmersdelight:netherite_knife".equals(String.valueOf(data.gear()))) {
+                netherite = data;
+                break;
+            }
+        }
+        helper.assertTrue(netherite != null, "netherite_knife must have a gear existence entry");
+        helper.assertTrue(netherite.evolution().isEmpty(),
+                "netherite_knife must be a terminal rung - the kunai is not a tagged knife");
+        helper.assertTrue(netherite.maxEP() == KnifeLadders.TOP_GATE,
+                "netherite_knife must finish at the sword's gate, got " + netherite.maxEP());
         helper.succeed();
     }
 

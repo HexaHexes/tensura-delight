@@ -1,7 +1,7 @@
 {
   "type": "dungeonsdelight:fiery_cleaver",
-  "epGain": 0.02,
+  "epGain": 0.003,
   "evolution": "dungeonsdelight:netherite_cleaver",
-  "maxEP": 31000,
+  "maxEP": 9100,
   "minEP": 0
 }
