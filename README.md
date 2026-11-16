@@ -42,7 +42,9 @@ stronger. This mod is for playing both at once.
   with a tag file, no rebuild.
 - Tensura ingredients go back the other way. Tensura beef, fish and spider
   legs work in the cutting board, the cooking pot, the keg and the Monster
-  Pot, so the delight mods' recipes can be cooked from a Tensura hunt.
+  Pot, so the delight mods' recipes can be cooked from a Tensura hunt. The
+  pot, keg and Monster Pot recipe books learn the new dishes the way they
+  learn the hosts' own: hold one of the ingredients.
 
 ## Dependencies
 

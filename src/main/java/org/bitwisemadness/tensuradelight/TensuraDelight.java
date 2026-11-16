@@ -11,6 +11,7 @@ import org.bitwisemadness.tensuradelight.datagen.AppetiteTagsContent;
 import org.bitwisemadness.tensuradelight.datagen.JsonFilesProvider;
 import org.bitwisemadness.tensuradelight.datagen.KnifeGearContent;
 import org.bitwisemadness.tensuradelight.datagen.MealGrantContent;
+import org.bitwisemadness.tensuradelight.datagen.StationAdvancementsContent;
 import org.bitwisemadness.tensuradelight.datagen.StationRecipesContent;
 import org.bitwisemadness.tensuradelight.event.AppetiteRefusalHandler;
 import org.bitwisemadness.tensuradelight.event.CuttingBoardHandler;
@@ -61,7 +62,8 @@ public final class TensuraDelight {
 
     /**
      * Feeds the shipped content ({@link MealGrantContent}, {@link KnifeGearContent},
-     * {@link StationRecipesContent}, {@link AppetiteTagsContent}) into datagen.
+     * {@link StationRecipesContent}, {@link StationAdvancementsContent},
+     * {@link AppetiteTagsContent}) into datagen.
      */
     private static void gatherData(GatherDataEvent event) {
         if (!event.includeServer()) {
@@ -73,6 +75,8 @@ public final class TensuraDelight {
                 event.getGenerator().getPackOutput(), KnifeGearContent.build()));
         event.addProvider(new JsonFilesProvider("station recipes",
                 event.getGenerator().getPackOutput(), StationRecipesContent.build()));
+        event.addProvider(new JsonFilesProvider("station advancements",
+                event.getGenerator().getPackOutput(), StationAdvancementsContent.build()));
         event.addProvider(new JsonFilesProvider("appetite tags",
                 event.getGenerator().getPackOutput(), AppetiteTagsContent.build()));
     }
