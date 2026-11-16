@@ -37,7 +37,7 @@ tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (18 tests). `expectedTests = 18`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (19 tests). `expectedTests = 19`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
 
@@ -197,9 +197,21 @@ into `run/mods` by `prepareGametestMods`.
   inline `KegRecipeWrapper` over 4 slots returning
   `AbstractedFluidStack.EMPTY`, because a recipe with no fluid ingredient
   demands an empty keg fluid.
-- **Not shipped:** `advancement/recipes/**` unlock files. Recipe viewers
-  (JEI/EMI) show the recipes outright; whether the vanilla recipe book also
-  needs unlock advancements mirroring the hosts' is a follow-up decision.
+- **Recipe-book unlocks:** this repo owns `data/tensura_delight/advancement/recipes/**` -
+  one unlock per recipe-book recipe, mirroring the hosts' advancement shape
+  (`parent` = `minecraft:recipes/root`, an `inventory_changed` ingredient
+  criterion OR `recipe_unlocked`, `rewards.recipes` = the recipe). All three
+  stations are `RecipeBookMenu`s, so without these their books list the hosts'
+  dishes but never ours. Two cooking unlocks ship unconditionally;
+  `fermenting/kippers_from_spear_toro` is gated on `brewinandchewin` and
+  `monster_cooking/spider_bisque_from_knight_spider` on `dungeonsdelight`,
+  each exactly where its recipe gates - an advancement may never outlive its
+  recipe, and `StationAdvancements.build()` throws if the two ever disagree.
+  **No cutting unlock:** the cutting board has no recipe book and Farmer's
+  Delight ships none either. `recipe/StationAdvancements.java` holds the
+  table (gson only, headless); `datagen/StationAdvancementsContent.java`
+  round-trips it and hands it to the same `JsonFilesProvider` in
+  `TensuraDelight.gatherData`.
 
 **Knife gear evolution (phase 4)**
 - **Path ownership:** this repo owns `data/tensura_delight/gear_existence/**`

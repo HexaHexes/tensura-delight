@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +40,7 @@ import org.bitwisemadness.tensuradelight.food.MealGrants;
 import org.bitwisemadness.tensuradelight.gear.CuttingGrants;
 import org.bitwisemadness.tensuradelight.gear.CuttingTools;
 import org.bitwisemadness.tensuradelight.gear.KnifeLadders;
+import org.bitwisemadness.tensuradelight.recipe.StationAdvancements;
 import org.bitwisemadness.tensuradelight.recipe.StationRecipes;
 import org.bitwisemadness.tensuradelight.tensura.TensuraBridge;
 import umpaz.brewinandchewin.common.crafting.KegFermentingRecipe;
@@ -52,10 +55,11 @@ import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipeInput;
  * have installed the generated tables, Tensura is really on the run closure
  * with an entry for every knife, the cutting tag resolves, the station
  * recipes load through the recipe manager and match their stations' inputs,
- * and race appetite refuses and gates delight food through the shipped tags.
+ * their recipe-book unlocks load so the stations' books can list them, and
+ * race appetite refuses and gates delight food through the shipped tags.
  *
  * <p>Keep {@code expectedTests} in {@code build.gradle} in sync with the
- * number of {@code @GameTest} methods here (18 today), or the harness fails
+ * number of {@code @GameTest} methods here (19 today), or the harness fails
  * the run.</p>
  */
 @GameTestHolder(TensuraDelight.MOD_ID)
@@ -301,6 +305,39 @@ public final class TensuraDelightGameTests {
         helper.assertFalse(minced.isEmpty(), "minced beef must be a registered item");
         helper.assertTrue(minced.getComponents().has(DataComponents.FOOD),
                 "minced beef is edible even though it is an ingredient");
+        helper.succeed();
+    }
+
+    /**
+     * The four recipe-book unlocks loaded: each hangs under the recipes root
+     * and rewards a recipe the recipe manager really holds, so the cooking
+     * pot, keg and Monster Pot books can list our dishes the way they list
+     * the hosts'. The cutting board stays unlocked-less, the way Farmer's
+     * Delight ships its own cutting recipes - no book displays them.
+     */
+    @GameTest(template = "empty")
+    public static void station_recipe_unlocks_load(GameTestHelper helper) {
+        ServerAdvancementManager advancements = helper.getLevel().getServer().getAdvancements();
+        for (String id : StationAdvancements.advancementIds()) {
+            AdvancementHolder holder = advancements.get(ResourceLocation.parse(id));
+            helper.assertTrue(holder != null, "the advancement manager must load " + id);
+            helper.assertTrue(holder.value().parent().filter(
+                            parent -> "minecraft:recipes/root".equals(parent.toString())).isPresent(),
+                    id + " must hang under the recipes root");
+            helper.assertTrue(holder.value().criteria().containsKey("has_the_recipe"),
+                    id + " must watch its recipe being unlocked");
+            List<ResourceLocation> rewarded = holder.value().rewards().recipes();
+            helper.assertTrue(rewarded.size() == 1,
+                    id + " must reward exactly one recipe, got " + rewarded);
+            helper.assertTrue(helper.getLevel().getRecipeManager().byKey(rewarded.get(0)).isPresent(),
+                    id + " must reward a recipe the manager loaded: " + rewarded.get(0));
+        }
+
+        ResourceLocation cutting = ResourceLocation.parse(
+                "tensura_delight:recipes/cutting/cattledeer_beef");
+        helper.assertFalse(advancements.getAllAdvancements().stream()
+                        .anyMatch(loaded -> cutting.equals(loaded.id())),
+                "the cutting board has no recipe book, so it must ship no unlock");
         helper.succeed();
     }
 
