@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:steeleaf_knife",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:knightmetal_knife",
-  "maxEP": 4800,
+  "maxEP": 5100,
   "minEP": 0
 }

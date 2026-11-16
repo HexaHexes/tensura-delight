@@ -37,7 +37,7 @@ tracking issue each.
   therefore `1.5.0`; re-read the staged jar's metadata after any pin bump
   rather than trusting the file name.
 
-**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (17 tests). `expectedTests = 17`
+**Test:** `./gradlew runGameTestServer` - `TensuraDelightGameTests` (18 tests). `expectedTests = 18`
 in `build.gradle` must match the `@GameTest` count. The run closure is staged
 into `run/mods` by `prepareGametestMods`.
 
@@ -209,10 +209,11 @@ into `run/mods` by `prepareGametestMods`.
   `data/gearevolution/**`: `tensura-iaf-growth` and `tensura-iss-growth` own
   paths there, and their registry rules bind this repo's entries too.
 - **Ladder table:** `gear/KnifeLadders.java` holds the five ladders with rungs
-  in climb order; `datagen/KnifeGearContent.java` emits them through the
-  `JsonFilesProvider` round trip, together with the cutting tag and the cut
-  rate. Family order was read from the staged jars, so no family needed the
-  unordered-terminal exception:
+  in climb order, each ladder declaring the host mod its files are gated on
+  (`Ladder.requiredMod`, stamped onto every rung); `datagen/KnifeGearContent.java`
+  emits them through the `JsonFilesProvider` round trip, together with the
+  cutting tag and the cut rate. Family order was read from the staged jars,
+  so no family needed the unordered-terminal exception:
   - Farmer's Delight mirrors the pack's vanilla sword ladder: flint below
     stone, to iron, gold parallel onto diamond, diamond to netherite. Tiers
     come from FD's `ModMaterials.FLINT` and the vanilla `Tiers` its five
@@ -228,26 +229,54 @@ into `run/mods` by `prepareGametestMods`.
     pack-vanilla material, which keeps the vanilla backbone of the ladder.
   - `aquaculturedelight:neptunium_knife` is a family of one, so it is its own
     top rung.
-- **Gates and rates: sword parity, compressed.** Every family climbs the
-  vanilla sword material ladder - flint below stone - with gates global per
-  material, so an iron knife, an iron fillet knife and an iron-tier cleaver
-  all evolve at the same EP. The anchors are the sword chain's own, read from
-  tensura-iaf-growth: stone at 500, netherite at 10000 (where iaf-growth's
-  `netherite_sword` hands off to `tensura:low_magisteel_sword`). The ten
-  materials between them (iron, zanite, ironwood, steel, steeleaf,
-  knightmetal, gravitite, diamond, stained, fiery) space evenly, rounded to
-  100 - iaf-growth tracks only stone and netherite for vanilla, so the middle
-  materials have no sword rung to copy and take their even share: iron 1400,
-  diamond 7400. Each family's final rung - netherite tier, or the highest
-  material the family ships - **terminals at the 10000 cap**: `maxEP` 10000,
+- **Gates and rates: the sword ladder's own values, verbatim.** Every family
+  climbs the pack's sword material ladder with gates read straight off the
+  chain the swords climb - gearevolution's bundled ladder as
+  tensura-iaf-growth overrides it: wood/flint 200, stone 500, iron and
+  golden 2600, diamond 7000, netherite 10000 (the bundled 13500 replaced
+  outright). Gates are global per material, so an iron knife, an iron fillet
+  knife and an iron-tier cleaver all evolve at the same 2600. Dungeon's
+  Delight's own materials interleave between iron and diamond (zanite 3200,
+  ironwood 3900, steel 4500, steeleaf 5100, knightmetal 5700, gravitite
+  6400) and between diamond and netherite (stained 8000, fiery 9000), in
+  DD's own material order, while the vanilla families only ever climb
+  vanilla targets - a Farmer's Delight knife has no zanite knife to become.
+  **EP is cumulative and carries across an evolution** (`DeathHandler.gearGetEP`
+  rebuilds the new stack with the old component patch and never re-stamps
+  EP), so two rungs sharing a band in sequence would promote on the spot:
+  golden sits parallel to iron at 2600 and both climb into diamond, exactly
+  like the pack's golden sword, never after iron. Each family's final rung
+  **terminals at its own material's gate**: netherite or neptunium at
+  10000, Dungeon's Delight's knife line at fiery's 9000 - `maxEP` there,
   no `evolution` (Tensura's codec keeps evolution `Optional`; the
-  `top_rung_terminals_at_the_sword_gate` GameTest proves the real registry
-  took it). All shipped gates sit below 18000, so every `epGain` is 0.003;
-  a datapack file may omit the key to take the codec's 0.03 default.
+  `top_rungs_terminal_at_their_family_gate` GameTest proves the real
+  registry took it). All shipped gates sit below 18000, so every `epGain`
+  is 0.003; a datapack file may omit the key to take the codec's 0.03
+  default. `KnifeLaddersTest.gatesAreTheSwordsOwnValues` pins every one of
+  the 32 rungs' gates by literal, so a drifted value fails by name.
+- **Optional families are condition-gated in their data, not carved out of
+  the table.** Each ladder declares its host mod, and `KnifeGearContent`
+  writes it into every rung file as
+  `"neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": ...}]`
+  (the same shape `StationRecipes` uses). NeoForge patches
+  `RegistryDataLoader` with `ConditionalOps.createConditionalCodec`, so an
+  unmet condition skips the whole registry entry (debug-logged as "Skipping
+  loading registry entry ... conditions were not met") instead of decoding
+  it; the `gear_existence_covers_every_knife` GameTest asserts present-if
+  and only-if the host is on the run closure - its proof of the skip is the
+  gametest closure, which stages no Aquaculture. **Aquaculture 2 and
+  Aquaculture Delight were dropped from the pack on 2026-11-15**: their
+  fillet ladders still ship and simply skip at load, re-activating if the
+  mods return; the mod ids (`aquaculture`, `aquaculturedelight`) were read
+  from the jars, and no compile dependency exists - the ladders are data
+  only. Farmer's Delight is required by the pack, so its knives stay
+  unconditional. The parser validates the condition shape (exactly one
+  `neoforge:mod_loaded` entry, namespace-only `modid`, no other condition
+  type), so a malformed file fails datagen instead of shipping.
 - **The kunai is deliberately not a rung.** No mod in the pack tags
   `tensura:kunai` as a knife - verified by scanning every jar's tag files -
-  so the old netherite-into-kunai hand-off is gone and a kitchen knife's
-  story ends where a netherite sword's does. If a future pack wants the
+  so the old netherite-into-kunai hand-off is gone: a kitchen knife's story
+  ends at its family's top material gate. If a future pack wants the
   hand-off back, the fix is a tag file putting `tensura:kunai` into
   `c:tools/knife` plus a ladder entry, not a special case in code.
 - **`epGain` is a share of the killed mob's EP, not a flat rate.**

@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:knightmetal_knife",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:gravitite_knife",

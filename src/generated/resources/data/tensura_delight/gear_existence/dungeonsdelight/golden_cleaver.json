@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:golden_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:diamond_cleaver",
-  "maxEP": 1400,
+  "maxEP": 2600,
   "minEP": 0
 }

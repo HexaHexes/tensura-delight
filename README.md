@@ -16,11 +16,14 @@ stronger. This mod is for playing both at once.
 - Knives climb their own gear ladder now. Every knife and cleaver from
   Farmer's Delight, Aquaculture, Aquaculture Delight and Dungeon's Delight
   earns gear EP in combat and while cutting on a cutting board, fills its
-  band, and evolves into the next material of its family. The ladders follow
-  the vanilla sword materials - flint below stone - and every family tops out
-  at the netherite tier's 10000 EP gate, the same gate a netherite sword
-  evolves past. The per-cut reward and every rung can be retuned from a
-  datapack.
+  band, and evolves into the next material of its family. The ladders use
+  the pack's own sword gates verbatim - wood/flint 200, stone 500, iron and
+  golden 2600, diamond 7000, netherite 10000 - with Dungeon's Delight's
+  materials interleaved between them, golden running parallel onto diamond
+  like the golden sword, and each family topping out at its own material's
+  gate. Families hosted by an optional mod load only while that mod does,
+  so dropping Aquaculture simply parks its fillet knives. The per-cut
+  reward and every rung can be retuned from a datapack.
 - Race appetite decides what delight food does. A race that does not eat has
   delight food and drinks refused before use, monster races are the ones built
   for what Dungeon's Delight cooks in a Monster Pot, and the remaining classes

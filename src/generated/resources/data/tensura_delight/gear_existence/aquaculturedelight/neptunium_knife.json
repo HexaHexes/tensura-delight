@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "aquaculturedelight"
+    }
+  ],
   "type": "aquaculturedelight:neptunium_knife",
   "epGain": 0.003,
   "maxEP": 10000,

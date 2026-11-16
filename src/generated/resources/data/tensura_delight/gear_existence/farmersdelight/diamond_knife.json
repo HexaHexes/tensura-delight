@@ -2,6 +2,6 @@
   "type": "farmersdelight:diamond_knife",
   "epGain": 0.003,
   "evolution": "farmersdelight:netherite_knife",
-  "maxEP": 7400,
+  "maxEP": 7000,
   "minEP": 0
 }

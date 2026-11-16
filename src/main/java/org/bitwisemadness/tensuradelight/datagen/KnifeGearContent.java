@@ -54,9 +54,15 @@ public final class KnifeGearContent {
         return files;
     }
 
-    /** Field order matches what {@link KnifeLadders#parse} reads, so the diff stays honest. */
+    /**
+     * Field order matches what {@link KnifeLadders#parse} reads, conditions
+     * first like the shipped station recipes, so the diff stays honest.
+     */
     private static JsonObject rungJson(KnifeLadders.Rung rung) {
         JsonObject json = new JsonObject();
+        if (rung.requiredMod() != null) {
+            addModLoadedCondition(json, rung.requiredMod());
+        }
         json.addProperty("type", rung.itemId());
         json.addProperty("minEP", rung.minEp());
         if (rung.maxEp() != null) {
@@ -69,6 +75,20 @@ public final class KnifeGearContent {
             json.addProperty("evolution", rung.evolution());
         }
         return json;
+    }
+
+    /**
+     * Conditions gate the registry entry at load, so an absent host never
+     * contributes a rung naming an item that does not exist - NeoForge
+     * skips the whole file and logs it, and the entry is simply not there.
+     */
+    private static void addModLoadedCondition(JsonObject json, String modId) {
+        JsonObject condition = new JsonObject();
+        condition.addProperty("type", "neoforge:mod_loaded");
+        condition.addProperty("modid", modId);
+        JsonArray conditions = new JsonArray();
+        conditions.add(condition);
+        json.add("neoforge:conditions", conditions);
     }
 
     /**

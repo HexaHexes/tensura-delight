@@ -1,6 +1,12 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:fiery_knife",
   "epGain": 0.003,
-  "maxEP": 10000,
+  "maxEP": 9000,
   "minEP": 0
 }
