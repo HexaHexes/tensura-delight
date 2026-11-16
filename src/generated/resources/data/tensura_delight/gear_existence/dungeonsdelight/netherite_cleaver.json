@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:netherite_cleaver",
   "epGain": 0.003,
   "maxEP": 10000,

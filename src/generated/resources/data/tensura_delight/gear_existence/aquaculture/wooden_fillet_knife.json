@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "aquaculture"
+    }
+  ],
   "type": "aquaculture:wooden_fillet_knife",
   "epGain": 0.003,
   "evolution": "aquaculture:stone_fillet_knife",

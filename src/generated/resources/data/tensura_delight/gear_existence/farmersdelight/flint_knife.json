@@ -2,6 +2,6 @@
   "type": "farmersdelight:flint_knife",
   "epGain": 0.003,
   "evolution": "farmersdelight:iron_knife",
-  "maxEP": 500,
+  "maxEP": 200,
   "minEP": 0
 }

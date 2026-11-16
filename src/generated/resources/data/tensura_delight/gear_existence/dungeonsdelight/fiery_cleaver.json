@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:fiery_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:netherite_cleaver",
-  "maxEP": 9100,
+  "maxEP": 9000,
   "minEP": 0
 }

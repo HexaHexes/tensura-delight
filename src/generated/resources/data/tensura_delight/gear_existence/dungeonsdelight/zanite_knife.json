@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:zanite_knife",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:ironwood_knife",
-  "maxEP": 2200,
+  "maxEP": 3200,
   "minEP": 0
 }

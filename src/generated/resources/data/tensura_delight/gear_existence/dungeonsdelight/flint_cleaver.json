@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:flint_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:iron_cleaver",
-  "maxEP": 500,
+  "maxEP": 200,
   "minEP": 0
 }

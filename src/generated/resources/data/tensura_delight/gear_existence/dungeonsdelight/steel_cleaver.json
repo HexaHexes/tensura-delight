@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:steel_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:steeleaf_cleaver",
-  "maxEP": 4000,
+  "maxEP": 4500,
   "minEP": 0
 }

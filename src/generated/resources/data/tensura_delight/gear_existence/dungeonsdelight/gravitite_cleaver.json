@@ -1,7 +1,13 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dungeonsdelight"
+    }
+  ],
   "type": "dungeonsdelight:gravitite_cleaver",
   "epGain": 0.003,
   "evolution": "dungeonsdelight:diamond_cleaver",
-  "maxEP": 6500,
+  "maxEP": 6400,
   "minEP": 0
 }

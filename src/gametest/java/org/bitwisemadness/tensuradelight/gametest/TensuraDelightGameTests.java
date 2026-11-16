@@ -25,6 +25,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.GameType;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -54,7 +55,7 @@ import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipeInput;
  * and race appetite refuses and gates delight food through the shipped tags.
  *
  * <p>Keep {@code expectedTests} in {@code build.gradle} in sync with the
- * number of {@code @GameTest} methods here (17 today), or the harness fails
+ * number of {@code @GameTest} methods here (18 today), or the harness fails
  * the run.</p>
  */
 @GameTestHolder(TensuraDelight.MOD_ID)
@@ -121,40 +122,72 @@ public final class TensuraDelightGameTests {
     }
 
     /**
-     * Tensura's registry accepted the terminal shape: the top rung loads with
-     * no evolution and the sword's netherite gate. This is the check that
-     * matters for the kunai removal - a capped terminal is our data's shape,
-     * and only the real registry proves the codec took it.
+     * Tensura's registry accepted the terminal shape at each family's own
+     * gate: the sword's netherite band for a netherite-topped family, and
+     * Dungeon's Delight's own fiery band for its knife line. This is the
+     * check that matters for the kunai removal and the material interleave
+     * - a capped terminal is our data's shape, and only the real registry
+     * proves the codec took it.
      */
     @GameTest(template = "empty")
-    public static void top_rung_terminals_at_the_sword_gate(GameTestHelper helper) {
+    public static void top_rungs_terminal_at_their_family_gate(GameTestHelper helper) {
         Registry<GearExistenceData> registry =
                 helper.getLevel().registryAccess().registryOrThrow(TensuraCustomData.GEAR_EXISTENCE);
-        GearExistenceData netherite = null;
-        for (GearExistenceData data : registry) {
-            if ("farmersdelight:netherite_knife".equals(String.valueOf(data.gear()))) {
-                netherite = data;
-                break;
-            }
-        }
-        helper.assertTrue(netherite != null, "netherite_knife must have a gear existence entry");
-        helper.assertTrue(netherite.evolution().isEmpty(),
-                "netherite_knife must be a terminal rung - the kunai is not a tagged knife");
-        helper.assertTrue(netherite.maxEP() == KnifeLadders.TOP_GATE,
-                "netherite_knife must finish at the sword's gate, got " + netherite.maxEP());
+        assertTerminal(helper, registry, "farmersdelight:netherite_knife", 10000);
+        assertTerminal(helper, registry, "dungeonsdelight:netherite_cleaver", 10000);
+        assertTerminal(helper, registry, "dungeonsdelight:fiery_knife", 9000);
         helper.succeed();
     }
 
-    /** Every covered knife has an entry in Tensura's gear existence registry. */
+    /**
+     * Every knife whose host is on the run closure has an entry in
+     * Tensura's gear existence registry, and every knife whose host is
+     * absent has none: the optional families ship a neoforge:mod_loaded
+     * condition, this run closure stages no Aquaculture, so their files
+     * must skip at load instead of naming items that do not exist.
+     */
     @GameTest(template = "empty")
     public static void gear_existence_covers_every_knife(GameTestHelper helper) {
         Registry<GearExistenceData> registry =
                 helper.getLevel().registryAccess().registryOrThrow(TensuraCustomData.GEAR_EXISTENCE);
         Set<String> covered = new HashSet<>();
         registry.stream().forEach(data -> covered.add(data.gear().toString()));
-        for (String itemId : KnifeLadders.byItem().keySet()) {
-            helper.assertTrue(covered.contains(itemId), "no gear_existence entry for " + itemId);
+        for (Map.Entry<String, KnifeLadders.Rung> entry : KnifeLadders.byItem().entrySet()) {
+            String itemId = entry.getKey();
+            String host = entry.getValue().requiredMod();
+            if (host == null || ModList.get().isLoaded(host)) {
+                helper.assertTrue(covered.contains(itemId), "no gear_existence entry for " + itemId);
+            } else {
+                helper.assertFalse(covered.contains(itemId),
+                        itemId + " must skip at load while " + host + " is absent");
+            }
         }
+        helper.succeed();
+    }
+
+    /**
+     * Gold runs parallel to iron at the sword's own band: EP carries across
+     * an evolution, so iron and golden sharing 2600 in sequence would
+     * promote on the spot. Both gate at 2600, both climb into diamond, and
+     * diamond's band opens past them at 7000.
+     */
+    @GameTest(template = "empty")
+    public static void golden_knife_runs_parallel_to_iron(GameTestHelper helper) {
+        Registry<GearExistenceData> registry =
+                helper.getLevel().registryAccess().registryOrThrow(TensuraCustomData.GEAR_EXISTENCE);
+        GearExistenceData iron = gearEntry(helper, registry, "farmersdelight:iron_knife");
+        GearExistenceData gold = gearEntry(helper, registry, "farmersdelight:golden_knife");
+        GearExistenceData diamond = gearEntry(helper, registry, "farmersdelight:diamond_knife");
+        helper.assertTrue(iron.maxEP() == 2600,
+                "iron_knife must gate at the sword's 2600, got " + iron.maxEP());
+        helper.assertTrue(gold.maxEP() == 2600,
+                "golden_knife must share iron's band, got " + gold.maxEP());
+        helper.assertTrue(gold.evolution().filter(
+                        target -> "farmersdelight:diamond_knife".equals(String.valueOf(target)))
+                        .isPresent(),
+                "golden_knife must climb straight into diamond_knife, got " + gold.evolution());
+        helper.assertTrue(diamond.maxEP() == 7000,
+                "diamond_knife must open past iron's band at 7000, got " + diamond.maxEP());
         helper.succeed();
     }
 
@@ -383,6 +416,29 @@ public final class TensuraDelightGameTests {
                 helper.getLevel().getRecipeManager().byKey(ResourceLocation.parse(id));
         helper.assertTrue(found.isPresent(), "the recipe manager must load " + id);
         return found.get().value();
+    }
+
+    /** The registry's entry for one gear id, or a failed assertion naming it. */
+    private static GearExistenceData gearEntry(GameTestHelper helper,
+            Registry<GearExistenceData> registry, String itemId) {
+        GearExistenceData found = null;
+        for (GearExistenceData data : registry) {
+            if (itemId.equals(String.valueOf(data.gear()))) {
+                found = data;
+                break;
+            }
+        }
+        helper.assertTrue(found != null, itemId + " must have a gear existence entry");
+        return found;
+    }
+
+    /** A terminal rung: no evolution, and a band ending exactly at its gate. */
+    private static void assertTerminal(GameTestHelper helper, Registry<GearExistenceData> registry,
+            String itemId, int gate) {
+        GearExistenceData data = gearEntry(helper, registry, itemId);
+        helper.assertTrue(data.evolution().isEmpty(), itemId + " must be a terminal rung");
+        helper.assertTrue(data.maxEP() == gate,
+                itemId + " must finish at its material's gate " + gate + ", got " + data.maxEP());
     }
 
     /** The cooking pot and the Monster Pot both scan exactly six slots when matching. */

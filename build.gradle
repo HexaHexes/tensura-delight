@@ -217,7 +217,7 @@ tasks.matching {
 // Grade the run on the log summary: the task's exit code is not a reliable
 // signal. Keep expectedTests in sync with the @GameTest methods.
 tasks.matching { it.name == 'runGameTestServer' }.configureEach {
-    def expectedTests = 17
+    def expectedTests = 18
     doLast {
         def log = file('run/logs/latest.log')
         if (!log.exists()) {
