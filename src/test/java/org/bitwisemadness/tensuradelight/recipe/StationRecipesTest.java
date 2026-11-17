@@ -30,15 +30,15 @@ class StationRecipesTest {
             "minecraft", "c", "tensura", "farmersdelight", "tensura_delight");
 
     @Test
-    void exactlyFiveRecipesUnderOurRecipeDirectory() {
+    void exactlyTwentyFourRecipesUnderOurRecipeDirectory() {
         Map<String, JsonObject> files = StationRecipesContent.build();
-        assertEquals(5, files.size(), "the station table ships five recipes");
+        assertEquals(24, files.size(), "the station table ships twenty-four recipes");
         Set<String> ids = new LinkedHashSet<>();
         for (String path : files.keySet()) {
             assertTrue(path.startsWith(RECIPE_DIR), "path must live under " + RECIPE_DIR + ": " + path);
             ids.add(StationRecipes.recipeId(path));
         }
-        assertEquals(5, ids.size(), "recipe ids must be unique");
+        assertEquals(24, ids.size(), "recipe ids must be unique");
     }
 
     @Test
@@ -127,20 +127,26 @@ class StationRecipesTest {
     @Test
     void mealResultsJoinThePhaseOneTable() {
         Set<String> meals = MealGrants.defaults().meals();
-        String cuttingResult = null;
+        Set<String> cuttingResults = new LinkedHashSet<>();
         for (Map.Entry<String, JsonObject> entry : StationRecipesContent.build().entrySet()) {
             JsonObject json = entry.getValue();
             if ("farmersdelight:cutting".equals(typeOf(json))) {
-                cuttingResult = resultId(json);
+                cuttingResults.add(resultId(json));
                 continue;
             }
             String meal = resultId(json);
             assertTrue(meals.contains(meal), meal + " must be listed as a meal");
         }
-        assertEquals("farmersdelight:minced_beef", cuttingResult,
-                "the cutting recipe must yield Farmer's Delight minced beef");
-        assertFalse(meals.contains(cuttingResult),
-                "minced beef is a cutting ingredient, not a meal");
+        // Every knife cut bridges into a chain some host already cooks: minced
+        // beef opens Farmer's Delight's beef dishes, salmon slice its salmon
+        // roll, and bone meal and slime ball are Dungeon's Delight inputs.
+        assertEquals(Set.of("farmersdelight:minced_beef", "farmersdelight:salmon_slice",
+                        "minecraft:bone_meal", "minecraft:slime_ball"), cuttingResults,
+                "the cutting board must bridge into existing host chains");
+        for (String cuttingResult : cuttingResults) {
+            assertFalse(meals.contains(cuttingResult),
+                    cuttingResult + " is a cutting ingredient, not a meal");
+        }
     }
 
     @Test

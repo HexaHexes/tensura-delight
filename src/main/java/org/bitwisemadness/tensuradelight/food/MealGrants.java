@@ -38,23 +38,51 @@ public final class MealGrants {
 
     /**
      * The starter list: real ids from the three delight mods' registration
-     * classes, one dish per mod at least. Entries for the optional mods are
-     * plain strings, so they are inert rather than an error when the mod is
-     * absent.
+     * classes, one dish per mod at least, plus every raw Tensura monster
+     * consumable and the dishes the station recipes below turn them into.
+     * Entries for the optional mods are plain strings, so they are inert
+     * rather than an error when the mod is absent. Sorted, because the
+     * shipped file is written in this order and the drift gate reads it
+     * back: reordering here reorders the JSON.
+     *
+     * <p>The raw meats pay out scaled from their own nutrition - a five
+     * nutrition cut is 10 EP and 50 magicule, the seven nutrition Blade
+     * Tiger is 14 and 70, a one nutrition fin is 2 and 10 - all well under
+     * {@code max_meal_ep}. They are listed for the grant only: which race
+     * may be paid for one is the {@code monster_meals} tag's business.</p>
      */
     private static final List<String> DEFAULT_MEALS = List.of(
             "brewinandchewin:cheesy_pasta",
             "brewinandchewin:creamy_onion_soup",
+            "brewinandchewin:jerky",
             "brewinandchewin:kippers",
             "brewinandchewin:pizza_slice",
             "dungeonsdelight:ghoulash",
+            "dungeonsdelight:gyudon",
             "dungeonsdelight:monster_burger",
+            "dungeonsdelight:salt_soaked_stew",
             "dungeonsdelight:spider_bisque",
+            "dungeonsdelight:spider_salmagundi",
+            "farmersdelight:baked_cod_stew",
             "farmersdelight:beef_stew",
             "farmersdelight:fish_stew",
             "farmersdelight:fried_rice",
             "farmersdelight:roast_chicken",
-            "farmersdelight:vegetable_soup");
+            "farmersdelight:vegetable_soup",
+            "tensura:cattledeer_beef",
+            "tensura:chilled_slime",
+            "tensura:giant_ant_leg",
+            "tensura:knight_spider_leg",
+            "tensura:raw_armorsaurus_meat",
+            "tensura:raw_blade_tiger_meat",
+            "tensura:raw_charybdis_meat",
+            "tensura:raw_giant_bat_meat",
+            "tensura:raw_megalodon_meat",
+            "tensura:raw_serpent_meat",
+            "tensura:raw_sissie_meat",
+            "tensura:raw_spear_toro_meat",
+            "tensura:sissie_fin",
+            "tensura:spear_toro_fin");
 
     /**
      * The shipped fixed grants: every drink of Brewin' And Chewin's

@@ -3,6 +3,10 @@
     {
       "id": "#dungeonsdelight:monster_foods",
       "required": false
+    },
+    {
+      "id": "#tensura:raw_monster_consumables",
+      "required": false
     }
   ]
 }

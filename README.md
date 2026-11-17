@@ -11,8 +11,8 @@ stronger. This mod is for playing both at once.
   by how nutritious the dish is, so a plated feast beats a snack. Brewin' And
   Chewin's drinks carry no nutrition, so they pay a small fixed amount instead
   - one nutrition's worth of the same scale. The mod ships a starter list of
-  meals from all three mods, and a datapack can retune the amounts or add
-  meals to it.
+  meals from the three delight mods plus Tensura's own raw monster
+  consumables, and a datapack can retune the amounts or add meals to it.
 - Knives climb their own gear ladder now. Every knife and cleaver from
   Farmer's Delight, Aquaculture, Aquaculture Delight and Dungeon's Delight
   earns gear EP in combat and while cutting on a cutting board, fills its
@@ -32,7 +32,7 @@ stronger. This mod is for playing both at once.
   | Appetite class | Tag | Shipped default | Effect |
   |---|---|---|---|
   | does not eat | `tensura_delight:does_not_eat` | `#tensura:unable_to_heal_with_food` (ghoul, vampire, vampire_overcomer, vampire_lord, divine_vampire) | Delight food and drinks are refused before use: nothing consumed, no nutrition, no effects, no grant |
-  | monster eater | `tensura_delight:monster_eater` | `#tensura:undead`, `#tensura:necromancer`, `#tensura:daemon`, `#tensura:slime`, `#capital_tensura_reincarnated:monsters` (optional) | only these races receive EP/magicule from Dungeon's Delight monster meals |
+  | monster eater | `tensura_delight:monster_eater` | `#tensura:undead`, `#tensura:necromancer`, `#tensura:daemon`, `#tensura:slime`, `#capital_tensura_reincarnated:monsters` (optional) | only these races receive EP/magicule from Dungeon's Delight monster meals and Tensura's raw monster consumables |
   | eats | `tensura_delight:eats` | empty = no restriction | when non-empty, only listed races receive grants from ordinary meals |
   | drinker | `tensura_delight:drinker` | empty = no restriction | when non-empty, only listed races receive grants from drinks |
 
@@ -40,11 +40,14 @@ stronger. This mod is for playing both at once.
   own behaviour: this mod only gates who receives the EP and magicule grant.
   Every appetite class is a datapack race tag, so a pack re-classifies a race
   with a tag file, no rebuild.
-- Tensura ingredients go back the other way. Tensura beef, fish and spider
-  legs work in the cutting board, the cooking pot, the keg and the Monster
-  Pot, so the delight mods' recipes can be cooked from a Tensura hunt. The
-  pot, keg and Monster Pot recipe books learn the new dishes the way they
-  learn the hosts' own: hold one of the ingredients.
+- Tensura ingredients go back the other way. Every raw meat and monster part
+  Tensura drops can be cut on the cutting board: filleted to minced beef or
+  salmon slice, crushed to bone meal, congealed to slime ball. That bridges
+  the hunt into the delight mods' own cooking chains and earns the knife its
+  gear EP. Ten of the delight mods' dishes can then be cooked from a Tensura
+  hunt across the cooking pot, the keg and the Monster Pot. The pot, keg and
+  Monster Pot recipe books learn the new dishes the way they learn the
+  hosts' own: hold one of the ingredients.
 
 ## Dependencies
 

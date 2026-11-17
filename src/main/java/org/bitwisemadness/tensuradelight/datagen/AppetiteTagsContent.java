@@ -56,7 +56,9 @@ public final class AppetiteTagsContent {
                 optionalReference("#capital_tensura_reincarnated:monsters")));
         files.put(EATS_FILE, tag());
         files.put(DRINKER_FILE, tag());
-        files.put(MONSTER_MEALS_FILE, tag(optionalReference("#dungeonsdelight:monster_foods")));
+        files.put(MONSTER_MEALS_FILE, tag(
+                optionalReference("#dungeonsdelight:monster_foods"),
+                optionalReference("#tensura:raw_monster_consumables")));
         // Both FD and DD write data/farmersdelight/tags/item/drinks.json, but
         // TagLoader unions a path's whole resource stack unless a file sets
         // "replace": true - so the two merge to all ten. See agents/REPO.md.
@@ -125,7 +127,8 @@ public final class AppetiteTagsContent {
         requireReferences(files.get(DOES_NOT_EAT_FILE), "#tensura:unable_to_heal_with_food");
         requireReferences(files.get(MONSTER_EATER_FILE), "#tensura:undead", "#tensura:necromancer",
                 "#tensura:daemon", "#tensura:slime");
-        requireReferences(files.get(MONSTER_MEALS_FILE), "#dungeonsdelight:monster_foods");
+        requireReferences(files.get(MONSTER_MEALS_FILE), "#dungeonsdelight:monster_foods",
+                "#tensura:raw_monster_consumables");
         requireReferences(files.get(DRINKS_FILE), "#brewinandchewin:fermented_drinks",
                 "#farmersdelight:drinks");
     }

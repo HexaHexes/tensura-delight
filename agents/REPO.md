@@ -51,6 +51,17 @@ into `run/mods` by `prepareGametestMods`.
   name two different tags. `validate()` fails the datagen run if a default the
   code relies on would go missing (an empty `eats`/`drinker` is deliberate, a
   dropped `#tensura:` reference is not).
+- **`monster_meals` is a grant gate, not a refusal gate.** It unions
+  `#dungeonsdelight:monster_foods` and `#tensura:raw_monster_consumables`,
+  both `required: false` so a pack may drop either. Membership only picks
+  `monster_eater` out of `gateFor`, so a human who eats raw monster meat is
+  simply paid nothing. `Appetite.refusesUse` is keyed on the delight
+  namespaces (`farmersdelight`, `brewinandchewin`, `dungeonsdelight`) and
+  still does not see `tensura:` at all, so a `does_not_eat` race keeps the
+  nutrition and effects of Tensura's own food. Widening
+  `DELIGHT_NAMESPACES` to `tensura` would refuse all forty-four Tensura
+  foods rather than these fourteen, so it is a separate decision and was
+  deliberately left out of the raw-meats work.
 - **Race-read gotcha:** race identity is read only through ManasCore -
   `RaceAPI.getRaceFrom(entity).getRace()` -> `Optional<ManasRaceInstance>` ->
   `instance.is(TagKey<ManasRace>)`. Never compare race-name strings. Race tags
@@ -149,24 +160,70 @@ into `run/mods` by `prepareGametestMods`.
 - **Path ownership:** this repo owns `data/tensura_delight/recipe/**` - one
   file per recipe at `data/tensura_delight/recipe/<station>/<name>.json`,
   recipe ids `tensura_delight:<station>/<name>`.
-- **The table:** `recipe/StationRecipes.java` builds the five recipes as
+- **The table:** `recipe/StationRecipes.java` builds the twenty-four recipes as
   gson JSON (no Minecraft classes, so JUnit runs it headless);
   `datagen/StationRecipesContent.java` round-trips every file through gson
   and hands the map to a `JsonFilesProvider` in `TensuraDelight.gatherData`,
   so the JSON ships only from `./gradlew runData` and table and output
   cannot drift apart. Each recipe mirrors the host's own recipe of the same
   dish, keeping its experience, tab, category, temperature and tool:
-  - `cooking/cattledeer_stew` - cooking pot: `tensura:cattledeer_beef` +
-    carrot + potato -> `farmersdelight:beef_stew`.
-  - `cooking/spear_toro_fish_stew` - cooking pot: `tensura:raw_spear_toro_meat`
-    + tomato sauce + onion -> `farmersdelight:fish_stew`.
-  - `cutting/cattledeer_beef` - cutting board: `tensura:cattledeer_beef` ->
-    2x `farmersdelight:minced_beef`, same knife tool as FD's beef cutting.
-  - `fermenting/kippers_from_spear_toro` - keg: 2x `tensura:raw_spear_toro_meat`
-    + dried kelp + the empty fourth slot -> 2x `brewinandchewin:kippers`.
-  - `monster_cooking/spider_bisque_from_knight_spider` - Monster Pot: 2x
-    `tensura:knight_spider_leg` + rotgourd slice + spider extract ->
-    `dungeonsdelight:spider_bisque`.
+  - Cooking pot (3): `cooking/cattledeer_stew` - `tensura:cattledeer_beef` +
+    carrot + potato -> `farmersdelight:beef_stew`;
+    `cooking/spear_toro_fish_stew` - `tensura:raw_spear_toro_meat` +
+    tomato sauce + onion -> `farmersdelight:fish_stew`;
+    `cooking/baked_cod_stew` - `tensura:raw_megalodon_meat` + potato + egg +
+    tomato -> `farmersdelight:baked_cod_stew`. The host reads
+    `c:foods/raw_cod`, which no Tensura item joins, so the first slot swaps
+    explicitly.
+  - Cutting board (14): one recipe per raw monster consumable of Tensura's
+    `#tensura:raw_monster_consumables`, all carrying Farmer's Delight's own
+    knife tool shape. The land meats (`cattledeer_beef`,
+    `raw_armorsaurus_meat`, `raw_blade_tiger_meat`, `raw_giant_bat_meat`,
+    `raw_serpent_meat`) fillet to 2x `farmersdelight:minced_beef`; the four
+    sea meats (`raw_charybdis_meat`, `raw_megalodon_meat`,
+    `raw_spear_toro_meat`, `raw_sissie_meat`) to 2x
+    `farmersdelight:salmon_slice` and the two fins (`spear_toro_fin`,
+    `sissie_fin`) to 1x; the chitin legs (`giant_ant_leg`,
+    `knight_spider_leg`) crush to `minecraft:bone_meal` and `chilled_slime`
+    congeals to `minecraft:slime_ball`. Every output bridges into a chain
+    some host already cooks, and none of them is tabled as a meal.
+  - Keg (2): `fermenting/kippers_from_spear_toro` - 2x
+    `tensura:raw_spear_toro_meat` + dried kelp + the empty fourth slot ->
+    2x `brewinandchewin:kippers`;
+    `fermenting/jerky_from_blade_tiger` - 3x `tensura:raw_blade_tiger_meat`
+    + the empty fourth slot -> 3x `brewinandchewin:jerky`, temperature 4.
+    The host's `brewinandchewin:foods/jerky_meat` reaches only vanilla
+    meat, so all three slots swap rather than keep a tag this mod's
+    ingredients never satisfy - which is also what makes the recipe new.
+  - Monster Pot (5): `monster_cooking/spider_bisque_from_knight_spider` -
+    2x `tensura:knight_spider_leg` + rotgourd slice + spider extract ->
+    `dungeonsdelight:spider_bisque`;
+    `monster_cooking/spider_salmagundi_from_knight_spider` - fermented
+    spider eye + 2x `tensura:knight_spider_leg` + onion ->
+    `dungeonsdelight:spider_salmagundi`;
+    `monster_cooking/ghoulash_from_giant_bat` - slime noodles +
+    `tensura:raw_giant_bat_meat` + rotten tomato ->
+    `dungeonsdelight:ghoulash`, swapping the host's
+    `#dungeonsdelight:fleshes` slot;
+    `monster_cooking/gyudon_from_armorsaurus` - `tensura:raw_armorsaurus_meat`
+    + `#dungeonsdelight:sculk_cheese` + cooked rice + fried egg + onion ->
+    `dungeonsdelight:gyudon` at experience 2.0, swapping the host's
+    `gritty_flesh`;
+    `monster_cooking/salt_soaked_stew_from_serpent` - 2x
+    `tensura:raw_serpent_meat` + salmon + beetroot ->
+    `dungeonsdelight:salt_soaked_stew`, swapping the host's `brined_flesh`.
+- **Why gyudon and not rubaboo:** Dungeon's Delight's own `rubaboo` carries
+  no `recipe_book_tab` - its serializer reads the field as
+  `optionalFieldOf(..., MONSTER_MISC)`, so a missing tab is legal and lands
+  the dish in Monster Misc - and adds a `cookingtime: 100`.
+  `StationRecipesTest.eachStationCarriesTheShapeItsHostReads` demands the tab
+  for every Monster Pot recipe, so the two disagree. `gyudon` is the
+  tab-bearing dish whose first ingredient is the very `gritty_flesh` a
+  rubaboo copy would have swapped, so the intended swap survives intact and
+  the test stays as written. Adding the missing tab to a rubaboo copy was
+  rejected as a one-key divergence from the host; shipping rubaboo
+  byte-for-byte and weakening the test was rejected for loosening a rule
+  every future recipe would inherit.
 - **Missing-host gating is per-recipe `neoforge:conditions`, not a gated
   provider.** The keg and Monster Pot recipes open with
   `{"neoforge:conditions":[{"type":"neoforge:mod_loaded","modid":...}]}` -
@@ -181,14 +238,27 @@ into `run/mods` by `prepareGametestMods`.
   and minecraft are required deps.
 - **Phase 1 table:** `brewinandchewin:kippers` (nutrition 6, so 12 EP and 60
   magicule at the defaults) and `farmersdelight:fish_stew` joined
-  `MealGrants.DEFAULT_MEALS`, and `meal_grant/meals.json` was regenerated
-  with them. `farmersdelight:minced_beef` is deliberately absent: a cutting
-  result is an ingredient for further cooking, and Farmer's Delight's own
-  minced beef is not tabled either.
-- **Gotcha:** Tensura's fish and meats are not in `c:foods/safe_raw_fish` or
-  `c:foods/raw_beef` - that gap is the whole reason these recipes exist.
-  Never "fix" an ingredient back into those tags; it would silently exclude
-  every Tensura item again.
+  `MealGrants.DEFAULT_MEALS`, and later all fourteen raw monster
+  consumables plus the five new station results, bringing the table to 31
+  entries. The raw meats scale from their own nutrition - a five nutrition
+  cut is 10 EP and 50 magicule, the seven nutrition Blade Tiger 14 and 70, a
+  one nutrition fin 2 and 10 - all well under `max_meal_ep`. Listing them
+  only says they *may* pay: which race is paid is the `monster_meals` tag's
+  business, not this table's. `farmersdelight:minced_beef` and the other
+  cutting outputs are deliberately absent: a cutting result is an ingredient
+  for further cooking, and Farmer's Delight's own minced beef is not tabled
+  either.
+- **Gotcha:** Tensura's *land* meats are in no `c:foods/raw_*` tag at all,
+  while its six sea meats sit in `c:foods/raw_fish` - which Farmer's
+  Delight's `c:foods/safe_raw_fish` already unions, so FD's own `fish_stew`
+  and `squid_ink_pasta` accept them with no help from this repo. FD's
+  `baked_cod_stew` reads `c:foods/raw_cod` instead, which none of them
+  join, which is exactly why `cooking/baked_cod_stew` swaps that slot
+  explicitly. The land meats reach the beef chain only by being cut to
+  `minced_beef` first, which is what the fourteen cutting recipes are for.
+  Never "fix" a Tensura ingredient into a `c:` tag from this repo: those
+  files belong to the host mods, and editing one changes every recipe that
+  reads it rather than just ours.
 - **Driving `matches()` headless:** all four stations are driven for real in
   the GameTests. `RecipeWrapper` takes an `IItemHandler` in this NeoForge, not
   a `SimpleContainer`, so the cooking pot and Monster Pot inputs wrap a
@@ -202,11 +272,11 @@ into `run/mods` by `prepareGametestMods`.
   (`parent` = `minecraft:recipes/root`, an `inventory_changed` ingredient
   criterion OR `recipe_unlocked`, `rewards.recipes` = the recipe). All three
   stations are `RecipeBookMenu`s, so without these their books list the hosts'
-  dishes but never ours. Two cooking unlocks ship unconditionally;
-  `fermenting/kippers_from_spear_toro` is gated on `brewinandchewin` and
-  `monster_cooking/spider_bisque_from_knight_spider` on `dungeonsdelight`,
-  each exactly where its recipe gates - an advancement may never outlive its
-  recipe, and `StationAdvancements.build()` throws if the two ever disagree.
+  dishes but never ours. The three cooking unlocks ship unconditionally; the
+  two keg unlocks gate on `brewinandchewin` and the five Monster Pot
+  unlocks on `dungeonsdelight`, each exactly where its recipe gates - an
+  advancement may never outlive its recipe, and `StationAdvancements.build()`
+  throws if the two ever disagree.
   **No cutting unlock:** the cutting board has no recipe book and Farmer's
   Delight ships none either. `recipe/StationAdvancements.java` holds the
   table (gson only, headless); `datagen/StationAdvancementsContent.java`

@@ -44,18 +44,34 @@ public final class StationAdvancements {
     private record Unlock(String recipePath, String requiredMod, List<String> ingredients) {
     }
 
-    /** The four recipe-book dishes, in table order: cooking twice, then the two gated stations. */
+    /** The ten recipe-book dishes, in table order: cooking three, then the two gated stations. */
     private static final List<Unlock> UNLOCKS = List.of(
+            new Unlock("cooking/baked_cod_stew", null,
+                    List.of("tensura:raw_megalodon_meat", "minecraft:potato", "minecraft:egg",
+                            "farmersdelight:tomato")),
             new Unlock("cooking/cattledeer_stew", null,
                     List.of("tensura:cattledeer_beef", "minecraft:carrot", "minecraft:potato")),
             new Unlock("cooking/spear_toro_fish_stew", null,
                     List.of("tensura:raw_spear_toro_meat", "farmersdelight:tomato_sauce",
                             "farmersdelight:onion")),
+            new Unlock("fermenting/jerky_from_blade_tiger", "brewinandchewin",
+                    List.of("tensura:raw_blade_tiger_meat")),
             new Unlock("fermenting/kippers_from_spear_toro", "brewinandchewin",
                     List.of("tensura:raw_spear_toro_meat", "minecraft:dried_kelp")),
+            new Unlock("monster_cooking/ghoulash_from_giant_bat", "dungeonsdelight",
+                    List.of("dungeonsdelight:slime_noodles", "tensura:raw_giant_bat_meat",
+                            "farmersdelight:rotten_tomato")),
+            new Unlock("monster_cooking/gyudon_from_armorsaurus", "dungeonsdelight",
+                    List.of("tensura:raw_armorsaurus_meat", "farmersdelight:cooked_rice",
+                            "farmersdelight:fried_egg", "farmersdelight:onion")),
+            new Unlock("monster_cooking/salt_soaked_stew_from_serpent", "dungeonsdelight",
+                    List.of("tensura:raw_serpent_meat", "minecraft:salmon", "minecraft:beetroot")),
             new Unlock("monster_cooking/spider_bisque_from_knight_spider", "dungeonsdelight",
                     List.of("tensura:knight_spider_leg", "dungeonsdelight:rotgourd_slice",
-                            "dungeonsdelight:spider_extract")));
+                            "dungeonsdelight:spider_extract")),
+            new Unlock("monster_cooking/spider_salmagundi_from_knight_spider", "dungeonsdelight",
+                    List.of("minecraft:fermented_spider_eye", "tensura:knight_spider_leg",
+                            "farmersdelight:onion")));
 
     private StationAdvancements() {
     }
