@@ -33,9 +33,9 @@ class StationAdvancementsTest {
             "minecraft", "c", "tensura", "farmersdelight", "tensura_delight");
 
     @Test
-    void exactlyFourUnlocksUnderOurRecipesDirectory() {
+    void exactlyTenUnlocksUnderOurRecipesDirectory() {
         Map<String, JsonObject> files = StationAdvancementsContent.build();
-        assertEquals(4, files.size(), "the table ships one unlock per recipe-book recipe");
+        assertEquals(10, files.size(), "the table ships one unlock per recipe-book recipe");
         Set<String> ids = new LinkedHashSet<>();
         for (String path : files.keySet()) {
             assertTrue(path.startsWith(ADVANCEMENT_DIR),
@@ -46,7 +46,7 @@ class StationAdvancementsTest {
                     "the cutting board has no recipe book, so it gets no unlock: " + path);
             ids.add(StationAdvancements.advancementId(path));
         }
-        assertEquals(4, ids.size(), "advancement ids must be unique");
+        assertEquals(10, ids.size(), "advancement ids must be unique");
     }
 
     @Test

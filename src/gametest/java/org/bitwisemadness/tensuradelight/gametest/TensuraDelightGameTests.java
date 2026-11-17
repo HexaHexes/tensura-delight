@@ -67,20 +67,58 @@ import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipeInput;
 public final class TensuraDelightGameTests {
 
     /** Expected recipe type registry id per shipped recipe path. */
-    private static final Map<String, String> STATION_TYPES = Map.of(
-            "cooking/cattledeer_stew", "farmersdelight:cooking",
-            "cooking/spear_toro_fish_stew", "farmersdelight:cooking",
-            "cutting/cattledeer_beef", "farmersdelight:cutting",
-            "fermenting/kippers_from_spear_toro", "brewinandchewin:fermenting",
-            "monster_cooking/spider_bisque_from_knight_spider", "dungeonsdelight:monster_cooking");
+    private static final Map<String, String> STATION_TYPES = Map.ofEntries(
+            Map.entry("cooking/baked_cod_stew", "farmersdelight:cooking"),
+            Map.entry("cooking/cattledeer_stew", "farmersdelight:cooking"),
+            Map.entry("cooking/spear_toro_fish_stew", "farmersdelight:cooking"),
+            Map.entry("cutting/cattledeer_beef", "farmersdelight:cutting"),
+            Map.entry("cutting/chilled_slime", "farmersdelight:cutting"),
+            Map.entry("cutting/giant_ant_leg", "farmersdelight:cutting"),
+            Map.entry("cutting/knight_spider_leg", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_armorsaurus_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_blade_tiger_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_charybdis_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_giant_bat_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_megalodon_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_serpent_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_sissie_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/raw_spear_toro_meat", "farmersdelight:cutting"),
+            Map.entry("cutting/sissie_fin", "farmersdelight:cutting"),
+            Map.entry("cutting/spear_toro_fin", "farmersdelight:cutting"),
+            Map.entry("fermenting/jerky_from_blade_tiger", "brewinandchewin:fermenting"),
+            Map.entry("fermenting/kippers_from_spear_toro", "brewinandchewin:fermenting"),
+            Map.entry("monster_cooking/ghoulash_from_giant_bat", "dungeonsdelight:monster_cooking"),
+            Map.entry("monster_cooking/gyudon_from_armorsaurus", "dungeonsdelight:monster_cooking"),
+            Map.entry("monster_cooking/salt_soaked_stew_from_serpent", "dungeonsdelight:monster_cooking"),
+            Map.entry("monster_cooking/spider_bisque_from_knight_spider", "dungeonsdelight:monster_cooking"),
+            Map.entry("monster_cooking/spider_salmagundi_from_knight_spider", "dungeonsdelight:monster_cooking"));
 
     /** Expected result item id per shipped recipe path. */
-    private static final Map<String, String> STATION_RESULTS = Map.of(
-            "cooking/cattledeer_stew", "farmersdelight:beef_stew",
-            "cooking/spear_toro_fish_stew", "farmersdelight:fish_stew",
-            "cutting/cattledeer_beef", "farmersdelight:minced_beef",
-            "fermenting/kippers_from_spear_toro", "brewinandchewin:kippers",
-            "monster_cooking/spider_bisque_from_knight_spider", "dungeonsdelight:spider_bisque");
+    private static final Map<String, String> STATION_RESULTS = Map.ofEntries(
+            Map.entry("cooking/baked_cod_stew", "farmersdelight:baked_cod_stew"),
+            Map.entry("cooking/cattledeer_stew", "farmersdelight:beef_stew"),
+            Map.entry("cooking/spear_toro_fish_stew", "farmersdelight:fish_stew"),
+            Map.entry("cutting/cattledeer_beef", "farmersdelight:minced_beef"),
+            Map.entry("cutting/chilled_slime", "minecraft:slime_ball"),
+            Map.entry("cutting/giant_ant_leg", "minecraft:bone_meal"),
+            Map.entry("cutting/knight_spider_leg", "minecraft:bone_meal"),
+            Map.entry("cutting/raw_armorsaurus_meat", "farmersdelight:minced_beef"),
+            Map.entry("cutting/raw_blade_tiger_meat", "farmersdelight:minced_beef"),
+            Map.entry("cutting/raw_charybdis_meat", "farmersdelight:salmon_slice"),
+            Map.entry("cutting/raw_giant_bat_meat", "farmersdelight:minced_beef"),
+            Map.entry("cutting/raw_megalodon_meat", "farmersdelight:salmon_slice"),
+            Map.entry("cutting/raw_serpent_meat", "farmersdelight:minced_beef"),
+            Map.entry("cutting/raw_sissie_meat", "farmersdelight:salmon_slice"),
+            Map.entry("cutting/raw_spear_toro_meat", "farmersdelight:salmon_slice"),
+            Map.entry("cutting/sissie_fin", "farmersdelight:salmon_slice"),
+            Map.entry("cutting/spear_toro_fin", "farmersdelight:salmon_slice"),
+            Map.entry("fermenting/jerky_from_blade_tiger", "brewinandchewin:jerky"),
+            Map.entry("fermenting/kippers_from_spear_toro", "brewinandchewin:kippers"),
+            Map.entry("monster_cooking/ghoulash_from_giant_bat", "dungeonsdelight:ghoulash"),
+            Map.entry("monster_cooking/gyudon_from_armorsaurus", "dungeonsdelight:gyudon"),
+            Map.entry("monster_cooking/salt_soaked_stew_from_serpent", "dungeonsdelight:salt_soaked_stew"),
+            Map.entry("monster_cooking/spider_bisque_from_knight_spider", "dungeonsdelight:spider_bisque"),
+            Map.entry("monster_cooking/spider_salmagundi_from_knight_spider", "dungeonsdelight:spider_salmagundi"));
 
     private TensuraDelightGameTests() {
     }
@@ -289,16 +327,31 @@ public final class TensuraDelightGameTests {
         helper.succeed();
     }
 
-    /** The four meal results are real foods on the Phase 1 table; minced beef stays an ingredient. */
+    /**
+     * Every recipe-book result is a real food on the Phase 1 table, while the
+     * cutting outputs stay ingredients: minced beef, salmon slice, bone meal
+     * and slime ball bridge into other chains rather than pay out themselves.
+     */
     @GameTest(template = "empty")
     public static void station_results_are_normal_food(GameTestHelper helper) {
         Set<String> meals = MealGrants.defaults().meals();
-        for (String id : List.of("farmersdelight:beef_stew", "farmersdelight:fish_stew",
-                "brewinandchewin:kippers", "dungeonsdelight:spider_bisque")) {
+        for (Map.Entry<String, String> entry : STATION_RESULTS.entrySet()) {
+            if (entry.getKey().startsWith("cutting/")) {
+                continue;
+            }
+            String id = entry.getValue();
             ItemStack food = stack(id);
             helper.assertFalse(food.isEmpty(), id + " must be a registered item");
             helper.assertTrue(food.getComponents().has(DataComponents.FOOD), id + " must be food");
             helper.assertTrue(meals.contains(id), id + " must be listed on the meal table");
+        }
+
+        for (String cuttingResult : Set.of("farmersdelight:minced_beef", "farmersdelight:salmon_slice",
+                "minecraft:bone_meal", "minecraft:slime_ball")) {
+            ItemStack bridged = stack(cuttingResult);
+            helper.assertFalse(bridged.isEmpty(), cuttingResult + " must be a registered item");
+            helper.assertFalse(meals.contains(cuttingResult),
+                    cuttingResult + " is a cutting ingredient, not a meal");
         }
 
         ItemStack minced = stack("farmersdelight:minced_beef");
@@ -309,7 +362,7 @@ public final class TensuraDelightGameTests {
     }
 
     /**
-     * The four recipe-book unlocks loaded: each hangs under the recipes root
+     * The ten recipe-book unlocks loaded: each hangs under the recipes root
      * and rewards a recipe the recipe manager really holds, so the cooking
      * pot, keg and Monster Pot books can list our dishes the way they list
      * the hosts'. The cutting board stays unlocked-less, the way Farmer's
@@ -333,11 +386,16 @@ public final class TensuraDelightGameTests {
                     id + " must reward a recipe the manager loaded: " + rewarded.get(0));
         }
 
-        ResourceLocation cutting = ResourceLocation.parse(
-                "tensura_delight:recipes/cutting/cattledeer_beef");
-        helper.assertFalse(advancements.getAllAdvancements().stream()
-                        .anyMatch(loaded -> cutting.equals(loaded.id())),
-                "the cutting board has no recipe book, so it must ship no unlock");
+        for (String path : StationRecipes.build().keySet()) {
+            if (!path.contains("/recipe/cutting/")) {
+                continue;
+            }
+            ResourceLocation unlock = ResourceLocation.parse(StationAdvancements.advancementId(
+                    path.replace("/recipe/", "/advancement/recipes/")));
+            helper.assertFalse(advancements.getAllAdvancements().stream()
+                            .anyMatch(loaded -> unlock.equals(loaded.id())),
+                    unlock + " must ship no unlock: the cutting board has no recipe book");
+        }
         helper.succeed();
     }
 
