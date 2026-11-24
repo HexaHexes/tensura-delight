@@ -6,8 +6,8 @@ and pulled in verbatim - **never hand-edit it.** Everything in this file is this
 repo's own and is edited freely; keep it aligned with the org rules rather than
 restating them.
 
-**Repo:** `HexaHexes/tensura-delight` - **Mod ID:** `tensura_delight` - **Branch:** `main`
-**Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 - **Jar:** `build/libs/tensura_delight-<version>.jar`
+**Repo:** `HexaHexes/tensura-delight` · **Mod ID:** `tensura_delight` · **Branch:** `neoforge-1.21.1` (the loader line; this is the default branch - no `main`)
+**Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 · **Jar:** `build/libs/tensura_delight-neoforge-1.21.1-<version>.jar`
 
 Brings Farmer's Delight, Brewin' And Chewin' and Dungeon's Delight into
 Tensura: Reincarnated's progression: delight meals grant EP and magicule and
